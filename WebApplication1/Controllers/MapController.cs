@@ -21,6 +21,8 @@ namespace WebApplication1.Controllers
         {
             Console.WriteLine();
 
+
+            Console.WriteLine();
             return Content(JsonConvert.SerializeObject("Uspjesno"), "application/json"); ;
         }
     }
