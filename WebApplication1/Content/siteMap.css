@@ -1,0 +1,53 @@
+﻿/*Div container za kartu*/
+#divMap {
+    border: 2px solid #cccccc;
+    position: absolute;
+    left: 20%;
+    right: 0%;
+    top: 0px;
+    bottom: 0%;
+    height: 100%;
+    background: #cccccc;
+    z-index: 5;
+}
+/*Div container za opcije u sidebaru*/
+#divOptions {
+    border: 2px solid #cccccc;
+    position: absolute;
+    left: 0%;
+    right: 80%;
+    top: 0px;
+    bottom: 0%;
+    background: white;
+    z-index: 6;
+}
+
+
+
+
+/*Ostale postavke su defaultne iz templatea*/
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+label.labelLeft {
+    display: inline-block;
+    text-align: left;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}

@@ -1,0 +1,158 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<link href="~/Content/ol.css" rel="stylesheet" />
+<link href="~/Content/siteMap.css" rel="stylesheet" />
+
+<script src="~/Content/ol.js"></script>
+
+<div id="divMap"></div>
+
+<div id="divOptions" style="background-color: white; font-family: serif; font-weight: bold; color: dodgerblue;">
+    <button class="btn btn-primary" type="button" style="width: 100%; margin: 2px; padding: 3px" + onclick="loadTrafficAccidents()">
+        Load all accidents
+    </button>
+    <br>
+    <br>
+    <button class="btn btn-primary" type="button" style="width: 100%; margin: 2px; padding: 3px" + onclick="groupTrafficAccidents()">
+        Group all accidents by PolUprava
+    </button>
+
+    <br>
+    <br>
+    <button class="btn btn-primary" type="button" style="width: 100%; margin: 2px; padding: 3px" + onclick="filterTrafficAccidents()">
+        Filter accidents by PolUprava
+    </button>
+    <br>
+
+    <br>
+    <br>
+    <button class=" btn btn-primary" type="button" style="width: 100%; margin: 2px; padding: 3px" + onclick="filterTrafficAccidentsOpcina()">
+        Filter accidents by Opcina
+    </button>
+    <br>
+
+    <br>
+    <br>
+    <button class=" btn btn-primary" type="button" style="width: 100%; margin: 2px; padding: 3px" + onclick="filterTrafficAccidentsMjesto()">
+        Filter accidents by Mjesto
+    </button>
+    <br>
+    <label for="dropdown">Select an option:</label>
+
+    <br>
+    <br>
+    <button class="btn btn-primary" type="button" style="width: 100%; margin: 2px; padding: 3px" + onclick="filterTrafficAccidentsVrsta()">
+        Filter accidents by Vrsta
+    </button>
+    <br>
+    <label for="dropdown">Select an option:</label>
+
+    <br>
+    <br>
+    <button class="btn btn-primary" type="button" style="width: 100%; margin: 2px; padding: 3px" + onclick="filterTrafficAccidentsPosljedica()">
+        Filter accidents by Posljedica
+    </button>
+    <br>
+    <label for="dropdown">Select an option:</label>
+
+    <br>
+    <br>
+    <button class="btn btn-primary" type="button" style="width: 100%; margin: 2px; padding: 3px" + onclick="filterTrafficAccidentsOkolnosti()">
+        Filter accidents by Okolnosti
+    </button>
+    <br>
+    <label for="dropdown">Select an option:</label>
+
+    <br>
+    <br>
+    <button class="btn btn-primary" type="button" style="width: 100%; margin: 2px; padding: 3px" + onclick="filterTrafficAccidentsBrojVoz()">
+        Filter accidents by BrojVoz
+    </button>
+    <br>
+    <label for="dropdown">Select an option:</label>
+
+    <br>
+    <br>
+    <button class="btn btn-primary" type="button" style="width: 100%; margin: 2px; padding: 3px" + onclick="filterTrafficAccidentsAtmPrilike()">
+        Filter accidents by AtmPrilike
+    </button>
+    <br>
+    <label for="dropdown">Select an option:</label>
+
+    <br>
+    <br>
+    <button class="btn btn-primary" type="button" style="width: 100%; margin: 2px; padding: 3px" + onclick="filterTrafficAccidentsDate()">
+        Filter accidents by Date
+    </button>
+    <label for="startDate"> Start date:</label>
+    <input type="date" id="startDate"><br>
+    <label for="endDate"> End date:</label>
+    <input type="date" id="endDate"><br>
+    <hr>
+    <button class="btn btn-primary" type="button" style="width: 100%; margin: 2px; padding: 3px" + onclick="filterTrafficAccidentsReset()">
+        Reset filtered accidents
+    </button>
+</div>
+
+<div id="popup" class="ol-popup">
+    <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+    <div id="popup-content"></div>
+</div>
+
+
+@*Glavni dio javascript koda*@
+<script type="text/javascript">
+
+    var plotedObjects = [];
+    var plotedVectorSources = [];
+
+    var map = new ol.Map({
+        interactions: ol.interaction.defaults({ doubleClickZoom: false }),
+        target: 'divMap',
+        layers: [
+            new ol.layer.Tile({
+                source: new ol.source.OSM()
+            })
+        ],
+        view: new ol.View({
+            center: ol.proj.fromLonLat([15.981179, 45.805281]),
+            zoom: 12
+        })
+    });
+
+    var vectorSource = new ol.source.Vector({});
+
+    map.on('dblclick', function (event) {
+        var koordinate = ol.proj.toLonLat(event.coordinate);
+
+        var longitude = koordinate[0];
+        var latitude = koordinate[1];
+
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("ComputeConture")",
+            data: { "longitude": koordinate[0], "latitude": koordinate[1] },
+            success: succesfullCall,//Funkcija koja se poziva ako je poziv bio uspješan
+            failure: function (response) {
+                //Ispiši grešku u malom prozorčiću
+                alert(response.error);
+            }
+                });
+
+        console.log(longitude);
+        console.log(latitude);
+    });
+
+
+    function succesfullCall(response) {
+        console.log(response);
+        
+    }
+
+
+</script>
