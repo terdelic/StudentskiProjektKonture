@@ -127,7 +127,7 @@
         $.ajax({
              type: "POST",
              url: "@Url.Action("ComputeConture")",
-            data: { longitude: longitude, latitude: latitude, selectedType: selectedType, selectedVarTime: selectedVarTime, selectedVarEnergy: selectedVarEnergy },
+            data: { longitude: longitude, latitude: latitude, selectedType: selectedType, selectedVarTime: selectedVarTime, selectedVarEnergy: selectedVarEnergy, strVrijemePocetka: 0 },
             success: succesfullCall,//Funkcija koja se poziva ako je poziv bio uspješan
             failure: function (response) {
             //Ispiši grešku u malom prozorčiću

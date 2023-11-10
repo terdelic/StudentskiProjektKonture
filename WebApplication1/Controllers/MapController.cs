@@ -26,7 +26,6 @@ namespace WebApplication1.Controllers
           
         int zapamtiIDpocetka;
         double zapamtiVrijemePocetka;
-        double vrijemePocetka = 0;
         double n;
         Vrh pocetak, zavrsetak;        
         string izbor;        
@@ -81,28 +80,32 @@ namespace WebApplication1.Controllers
 
         // public ActionResult ComputeConture(double x, double y, string type, double trTime, double trEner, string typeCountreMethod)
         [HttpPost]
-        public ActionResult ComputeConture(string longitude, string latitude, string selectedType, string selectedVarTime, string selectedVarEnergy)
+        public ActionResult ComputeConture(string longitude, string latitude, string selectedType, string selectedVarTime, string selectedVarEnergy, string strVrijemePocetka)
         {
+            double dlongitude = Convert.ToDouble(longitude.Replace('.',','));
+            double dlatitude = Convert.ToDouble(latitude.Replace('.', ','));
+            double vrijemePocetkaUSekundama = Convert.ToDouble(strVrijemePocetka.Replace('.', ','));
             //Pronadi najblizi vrh
-            pocetak = PronadiNajbliziLink(longitude, latitude);
+            pocetak = PronadiNajbliziLink(dlongitude, dlatitude);
 
             //Pozovi dijkstru kroz FibonacciHeap metodu
             if (selectedType == "premaEnergiji")
             {
                 string izbor = "energija prosjecna";
-                FibonacciHeapMetoda(izbor);
+                FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
                 n = Convert.ToDouble(selectedVarEnergy);
             }
             else
             {
                 string izbor = "vrijeme";
-                FibonacciHeapMetoda(izbor);
+                FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
                 n = Convert.ToDouble(selectedVarTime)*60;
             }
 
             //Filtiranje vrhova
             var listaVrhovaZaFilter = listaVrhova.ToList();
-            listaVrhovaZaFilter=listaVrhovaZaFilter.FindAll(vrh => vrh.Value.tezina < n); 
+            //NE tezina nego 
+            listaVrhovaZaFilter=listaVrhovaZaFilter.FindAll(vrh => vrh.Value.tezina < n);
 
             // Create a list of coordinates from the filtered data
             var coordinates = new List<Coordinate>();
@@ -118,11 +121,11 @@ namespace WebApplication1.Controllers
 
 
             // Calculate the alpha shape
-            var alphaBufferDisc = 0.0009; // Adjust this value based on your data and desired shape
+            var alphaBufferDisc = 0.01; // Adjust this value based on your data and desired shape
             var result = BufferDisc(geometry, alphaBufferDisc, geomFactory);
             //var result = ConcaveHullv2(geometry);
 
-            var writer = new WKTWriter();
+            WKTWriter writer = new WKTWriter();
             string contourWKT = writer.Write(result);
 
             //Console.WriteLine("Alpha Shape Contour for VALUE < 1000:");
@@ -214,7 +217,7 @@ namespace WebApplication1.Controllers
                 listaVrhova.Add(vEnergija.linkID, vEnergija);
                 pocetak = vEnergija;
                 izbor = "BellmanFord";
-                FibonacciHeapMetoda(izbor);
+                FibonacciHeapMetoda(izbor,0);
                 listaVrhova.Remove(vEnergija.linkID);
 
                 citanje.Close();                
@@ -225,7 +228,7 @@ namespace WebApplication1.Controllers
                 Console.WriteLine("Greska "+ ex.Message);
             }
         }
-        public void FibonacciHeapMetoda(string izbor)
+        public void FibonacciHeapMetoda(string izbor, double vrijemePocetkaUSekundama)
         {
             if (izbor != "BellmanFord")
             {
@@ -244,7 +247,7 @@ namespace WebApplication1.Controllers
                     if (vReset == pocetak)
                     {
                         vReset.tezina = 0;
-                        vReset.vrijemePolaska = vrijemePocetka;
+                        vReset.vrijemePolaska = vrijemePocetkaUSekundama;
                         pocetakHeapNode = node;
                     }
                     else
@@ -323,17 +326,19 @@ namespace WebApplication1.Controllers
                                 if (listaVrhova.ContainsKey(linkID))
                                 {
                                     Vrh v2 = listaVrhova[linkID];
-                                    double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.prosjecnaBrzina /3.6 );
+                                    double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.prosjecnaBrzina)*3.6;
                                     //double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka /v1.prosjecnaBrzina)*60/1000;
                                     double vrijemeDolaskaDoV2 = v1.vrijemePolaska + vrijemePutovanjaIzmeduV1iV2;
                                     if (v2.obraden)
                                     {
                                         continue;
                                     }
-                                    if (v2.tezina > v1.tezina + vrijemeDolaskaDoV2)
+                                    //I ovo mi se čini da je bilo krivo
+                                    //if (v2.tezina > v1.tezina + vrijemeDolaskaDoV2)
+                                    if (v2.tezina > vrijemeDolaskaDoV2)
                                     {
                                         FibonacciHeapNode<Vrh, double> nodeToUpdate = sviUHeapu[v2.linkID];
-                                        v2.tezina = v1.tezina + vrijemeDolaskaDoV2;
+                                        v2.tezina = vrijemeDolaskaDoV2;
                                         v2.prethodni = v1;
                                         v2.vrijemePolaska = vrijemeDolaskaDoV2;
                                         heap.DecreaseKey(nodeToUpdate, v2.tezina);
@@ -362,7 +367,7 @@ namespace WebApplication1.Controllers
                     if (vReset == vEnergija)
                     {
                         vReset.tezina = 0;
-                        vReset.vrijemePolaska = vrijemePocetka;
+                        vReset.vrijemePolaska = vrijemePocetkaUSekundama;
                         pocetakHeapNode = node;
                     }
                     else
@@ -409,13 +414,13 @@ namespace WebApplication1.Controllers
 
 
         //Metode za pronalazenje najblizeg vrha
-        private Vrh PronadiNajbliziLink(string longitude, string latitude)
+        private Vrh PronadiNajbliziLink(double longitude, double latitude)
         {
             Vrh v3 = null;            
             double minUdaljenost = double.MaxValue;
             foreach (Vrh v4 in listaVrhova.Values)
             {
-                double udaljenost = getDistanceFromPointToClosestPointOnLine(v4.xPocetak, v4.yPocetak, v4.xZavrsetak, v4.yZavrsetak, Convert.ToDouble(longitude), Convert.ToDouble(latitude));
+                double udaljenost = getDistanceFromPointToClosestPointOnLine(v4.xPocetak, v4.yPocetak, v4.xZavrsetak, v4.yZavrsetak, longitude, latitude);
                 if (udaljenost < minUdaljenost)
                 {
                     minUdaljenost = udaljenost;
