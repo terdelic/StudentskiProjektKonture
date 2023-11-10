@@ -18,9 +18,12 @@ namespace WebApplication1.Controllers
     public class MapController : Controller
     {
         //Ne znam jel ovo moze bit tu
-        Dictionary<int, Vrh> listaVrhova;
+        static Dictionary<int, Vrh> listaVrhova;
         FibonacciHeap<Vrh, double> heap;
-        StreamReader citanje = new StreamReader("updatedGraphZg.txt");        
+        // Get the physical path of the App_Data folder
+        string appDataPath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data");
+
+          
         int zapamtiIDpocetka;
         double zapamtiVrijemePocetka;
         double vrijemePocetka = 0;
@@ -30,7 +33,7 @@ namespace WebApplication1.Controllers
         Vrh vEnergija = new Vrh();
         bool podatciUcitani=false;
 
-
+        StreamReader citanje;
         //Klasa za vrh
         public class Vrh
         {
@@ -70,6 +73,8 @@ namespace WebApplication1.Controllers
         // GET: Map
         public ActionResult Index()
         {
+            listaVrhova = new Dictionary<int, Vrh>();
+            citanje = new StreamReader(appDataPath + "/updatedGraphZg.txt");
             UcitajPodatke(); //Ne znam jel ovo moze bit tu
             return View();
         }
@@ -79,7 +84,7 @@ namespace WebApplication1.Controllers
         public ActionResult ComputeConture(string longitude, string latitude, string selectedType, string selectedVarTime, string selectedVarEnergy)
         {
             //Pronadi najblizi vrh
-            Vrh pocetak = PronadiNajbliziLink(longitude, latitude);
+            pocetak = PronadiNajbliziLink(longitude, latitude);
 
             //Pozovi dijkstru kroz FibonacciHeap metodu
             if (selectedType == "premaEnergiji")
@@ -92,25 +97,12 @@ namespace WebApplication1.Controllers
             {
                 string izbor = "vrijeme";
                 FibonacciHeapMetoda(izbor);
-                n = Convert.ToDouble(selectedVarTime);
+                n = Convert.ToDouble(selectedVarTime)*60;
             }
 
             //Filtiranje vrhova
             var listaVrhovaZaFilter = listaVrhova.ToList();
-            listaVrhovaZaFilter.FindAll(vrh => vrh.Value.tezina < n); 
-            StreamWriter pisanje1 = new StreamWriter("tocke.txt");
-            foreach (var vrh in listaVrhovaZaFilter)
-            {
-                pisanje1.WriteLine(vrh.Value.linkID + ";" + vrh.Value.xZavrsetak + ";" + vrh.Value.yZavrsetak);
-            }
-            pisanje1.Close();
-
-            if (listaVrhovaZaFilter.Count == 0)
-            {
-                Console.WriteLine("No points with VALUE < 10 found.");
-            }
-
-            //Za crtanje mape???
+            listaVrhovaZaFilter=listaVrhovaZaFilter.FindAll(vrh => vrh.Value.tezina < n); 
 
             // Create a list of coordinates from the filtered data
             var coordinates = new List<Coordinate>();
@@ -133,18 +125,18 @@ namespace WebApplication1.Controllers
             var writer = new WKTWriter();
             string contourWKT = writer.Write(result);
 
-            Console.WriteLine("Alpha Shape Contour for VALUE < 1000:");
-            StreamWriter pisanje2 = new StreamWriter("konture.txt");
-            pisanje2.WriteLine(contourWKT);
-            pisanje2.Close();
-            Console.WriteLine(contourWKT);
+            //Console.WriteLine("Alpha Shape Contour for VALUE < 1000:");
+            //StreamWriter pisanje2 = new StreamWriter("konture.txt");
+            //pisanje2.WriteLine(contourWKT);
+            //pisanje2.Close();
+            //Console.WriteLine(contourWKT);
             
             
 
             //Promjenit
-            string primjer = "POLYGON ((15.9769105911255 45.8049086168488, 15.9787023067474 45.8049983661053, 15.9798556566238 45.8050731570458, 15.9815776348114 45.805331185026, 15.9851396083832 45.8070363789435, 15.987269282341 45.8094856448173, 15.9864270687103 45.8122376635526, 15.9853273630142 45.8129592927882, 15.976824760437 45.8113552375854, 15.9721308946609 45.8097698215335, 15.9706717729568 45.8089509297441, 15.9709185361862 45.8084162069347, 15.9769105911255 45.8049086168488))";
-            Console.WriteLine();
-            return Content(JsonConvert.SerializeObject(primjer), "application/json"); ;
+            //string primjer = "POLYGON ((15.9769105911255 45.8049086168488, 15.9787023067474 45.8049983661053, 15.9798556566238 45.8050731570458, 15.9815776348114 45.805331185026, 15.9851396083832 45.8070363789435, 15.987269282341 45.8094856448173, 15.9864270687103 45.8122376635526, 15.9853273630142 45.8129592927882, 15.976824760437 45.8113552375854, 15.9721308946609 45.8097698215335, 15.9706717729568 45.8089509297441, 15.9709185361862 45.8084162069347, 15.9769105911255 45.8049086168488))";
+            //Console.WriteLine();
+            return Content(JsonConvert.SerializeObject(contourWKT), "application/json"); ;
         }
 
         //Ucitavanje podataka iz datoteke
@@ -331,7 +323,7 @@ namespace WebApplication1.Controllers
                                 if (listaVrhova.ContainsKey(linkID))
                                 {
                                     Vrh v2 = listaVrhova[linkID];
-                                    double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.prosjecnaBrzina * (1000.0 / 60.0));
+                                    double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.prosjecnaBrzina /3.6 );
                                     //double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka /v1.prosjecnaBrzina)*60/1000;
                                     double vrijemeDolaskaDoV2 = v1.vrijemePolaska + vrijemePutovanjaIzmeduV1iV2;
                                     if (v2.obraden)

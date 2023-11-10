@@ -100,6 +100,7 @@
     var dropdown = document.getElementById('varTime');
     var selectedVarTime = '';
 
+    selectedVarTime = dropdown.options[0].value;
     dropdown.addEventListener("change", function () {
         selectedVarTime = dropdown.options[dropdown.selectedIndex].value
     });
@@ -114,14 +115,14 @@
         //varijabla za Odabir energije
         var selectedVarEnergy = document.getElementById("varEnergy").value;
 
-        //console.log("Tip")
-        //console.log(selectedType)
-        //console.log("Energija")
-        //console.log(selectedVarEnergy)
-        //console.log("Vrijeme")
-        //console.log(selectedVarTime)
-        //console.log(longitude);
-        //console.log(latitude);
+        console.log("Tip")
+        console.log(selectedType)
+        console.log("Energija")
+        console.log(selectedVarEnergy)
+        console.log("Vrijeme")
+        console.log(selectedVarTime)
+        console.log(longitude);
+        console.log(latitude);
 
         $.ajax({
              type: "POST",
