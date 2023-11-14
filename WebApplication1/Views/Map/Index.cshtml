@@ -115,15 +115,6 @@
         //varijabla za Odabir energije
         var selectedVarEnergy = document.getElementById("varEnergy").value;
 
-        console.log("Tip")
-        console.log(selectedType)
-        console.log("Energija")
-        console.log(selectedVarEnergy)
-        console.log("Vrijeme")
-        console.log(selectedVarTime)
-        console.log(longitude);
-        console.log(latitude);
-
         $.ajax({
              type: "POST",
              url: "@Url.Action("ComputeConture")",
@@ -139,6 +130,45 @@
 
     function succesfullCall(response) {
         console.log(response);
+
+        var wkt = response;
+
+        // Parse the WKT to create a geometry
+        var polygonGeometry = new ol.format.WKT().readGeometry(wkt, {
+            dataProjection: 'EPSG:4326', // WGS84
+            featureProjection: 'EPSG:3857' // Spherical Mercator
+        });
+
+        console.log(polygonGeometry);
+
+        // Create a feature using the polygon geometry
+        var polygonFeature = new ol.Feature(polygonGeometry);
+
+        // Create a vector source and add the feature to it
+        var vectorSource = new ol.source.Vector({
+            features: [polygonFeature]
+        });
+
+        // Define the style for the vector layer
+        var vectorStyle = new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(0, 0, 255, 0.5)' // Red color with 50% transparency
+            }),
+            stroke: new ol.style.Stroke({
+                color: 'blue',
+                width: 2
+            })
+        });
+
+        // Create a vector layer with the vector source and the defined style
+        var vectorLayer = new ol.layer.Vector({
+            source: vectorSource,
+            style: vectorStyle
+        });
+
+
+        // Add the vector layer to the map
+        map.addLayer(vectorLayer);
     }
 
 

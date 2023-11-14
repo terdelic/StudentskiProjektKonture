@@ -106,12 +106,16 @@ namespace WebApplication1.Controllers
             var listaVrhovaZaFilter = listaVrhova.ToList();
             //NE tezina nego 
             listaVrhovaZaFilter=listaVrhovaZaFilter.FindAll(vrh => vrh.Value.tezina < n);
-
+            listaVrhovaZaFilter = listaVrhovaZaFilter.FindAll(vrh => vrh.Value.tezina > 0);
             // Create a list of coordinates from the filtered data
             var coordinates = new List<Coordinate>();
             foreach (var vrh in listaVrhovaZaFilter)
             {
                 var coord = new Coordinate(vrh.Value.xZavrsetak, vrh.Value.yZavrsetak);
+                coordinates.Add(coord);
+                coord = new Coordinate(vrh.Value.xPocetak, vrh.Value.yPocetak);
+                coordinates.Add(coord);
+                coord = new Coordinate((vrh.Value.xPocetak + vrh.Value.xZavrsetak) / 2, (vrh.Value.yPocetak + vrh.Value.yZavrsetak) / 2);
                 coordinates.Add(coord);
             }
 
@@ -121,9 +125,9 @@ namespace WebApplication1.Controllers
 
 
             // Calculate the alpha shape
-            var alphaBufferDisc = 0.01; // Adjust this value based on your data and desired shape
-            var result = BufferDisc(geometry, alphaBufferDisc, geomFactory);
-            //var result = ConcaveHullv2(geometry);
+            var alphaBufferDisc = 0.0000001; // Adjust this value based on your data and desired shape
+            //var result = BufferDisc(geometry, alphaBufferDisc, geomFactory);
+            var result = ConcaveHullv2(geometry);
 
             WKTWriter writer = new WKTWriter();
             string contourWKT = writer.Write(result);
