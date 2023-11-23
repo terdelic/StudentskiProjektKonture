@@ -149,13 +149,15 @@
             features: [polygonFeature]
         });
 
+        color = random_rgba();
+        console.log(color);
         // Define the style for the vector layer
         var vectorStyle = new ol.style.Style({
             fill: new ol.style.Fill({
-                color: 'rgba(0, 0, 255, 0.5)' // Red color with 50% transparency
+                color: color// Red color with 50% transparency
             }),
             stroke: new ol.style.Stroke({
-                color: 'blue',
+                color: color,
                 width: 2
             })
         });
@@ -169,6 +171,12 @@
 
         // Add the vector layer to the map
         map.addLayer(vectorLayer);
+    }
+
+    // Funkcija za stvaranje slučajne boje
+    function random_rgba() {
+        var o = Math.round, r = Math.random, s = 255;
+        return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',0.5)';
     }
 
 

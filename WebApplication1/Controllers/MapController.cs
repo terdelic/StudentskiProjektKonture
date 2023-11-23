@@ -67,6 +67,7 @@ namespace WebApplication1.Controllers
                 tezina = double.MaxValue;
                 prethodni = null;
                 tezinaEnergija = double.MaxValue;
+                vrijemePolaska= double.MaxValue;
             }
         }
         // GET: Map
@@ -107,6 +108,7 @@ namespace WebApplication1.Controllers
             //NE tezina nego 
             listaVrhovaZaFilter=listaVrhovaZaFilter.FindAll(vrh => vrh.Value.tezina < n);
             listaVrhovaZaFilter = listaVrhovaZaFilter.FindAll(vrh => vrh.Value.tezina > 0);
+            
             // Create a list of coordinates from the filtered data
             var coordinates = new List<Coordinate>();
             foreach (var vrh in listaVrhovaZaFilter)
@@ -118,6 +120,8 @@ namespace WebApplication1.Controllers
                 coord = new Coordinate((vrh.Value.xPocetak + vrh.Value.xZavrsetak) / 2, (vrh.Value.yPocetak + vrh.Value.yZavrsetak) / 2);
                 coordinates.Add(coord);
             }
+
+
 
             // Create a geometry from the coordinates
             GeometryFactory geomFactory = new GeometryFactory();
@@ -244,7 +248,7 @@ namespace WebApplication1.Controllers
                     vReset.tezina = double.MaxValue;
                     vReset.obraden = false;
                     vReset.prethodni = null;
-                    vReset.vrijemePolaska = 0;
+                    vReset.vrijemePolaska = double.MaxValue;
                     vReset.ukupnaDuljina = 0;
                     vReset.ukupnaEnergija = 0;
                     FibonacciHeapNode<Vrh, double> node = new FibonacciHeapNode<Vrh, double>(vReset, vReset.tezina);
@@ -341,6 +345,10 @@ namespace WebApplication1.Controllers
                                     //if (v2.tezina > v1.tezina + vrijemeDolaskaDoV2)
                                     if (v2.tezina > vrijemeDolaskaDoV2)
                                     {
+                                        if(Math.Abs(v2.linkID)== 234015)
+                                        {
+                                            Console.WriteLine( );
+                                        }
                                         FibonacciHeapNode<Vrh, double> nodeToUpdate = sviUHeapu[v2.linkID];
                                         v2.tezina = vrijemeDolaskaDoV2;
                                         v2.prethodni = v1;

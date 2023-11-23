@@ -2,9 +2,9 @@
 #divMap {
     border: 2px solid #cccccc;
     position: absolute;
-    left: 20%;
+    left: 150px;
     right: 0%;
-    top: 0px;
+    top: 107px;
     bottom: 0%;
     height: 100%;
     background: #cccccc;
@@ -12,15 +12,16 @@
 }
 /*Div container za opcije u sidebaru*/
 #divOptions {
-    border: 2px solid #cccccc;
+    /*border: 2px solid #cccccc;*/
     position: absolute;
-    left: 0%;
-    right: 80%;
-    top: 0px;
+    left: 0px;
+    right: 100% - 150px;
+    top: 107px;
     bottom: 0%;
     background: white;
     z-index: 6;
 }
+
 
 
 
