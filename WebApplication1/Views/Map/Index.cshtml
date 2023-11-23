@@ -13,9 +13,19 @@
 
 <div id="divOptions" style="background-color: white; font-family: serif; font-weight: bold; color: dodgerblue;">
 
+    <label>Latitude</label>
     <input type="text" id="txtLatitude" readonly="true">
     <br>
+    <label>Longitude</label>
     <input type="text" id="txtLongitude" readonly="true">
+    <br>
+    <br>
+    <select id="varKonture">
+        <option value="Concave Hull 0">Concave Hull 0</option>
+        <option value="Concave Hull 0.0015">Concave Hull 0.0015</option>
+        <option value="Convex Hull">Convex Hull</option>
+        <option value="Buffer Disc">Buffer Disc</option>
+    </select>
     <br>
     <br>
     <label>Attributes:</label>
@@ -30,18 +40,26 @@
     <label>Choose time:</label>
     <br>
     <select id="varTime">
+        <option value="1">1 min</option>
+        <option value="2">2 min</option>
+        <option value="3">3 min</option>
+        <option value="4">4 min</option>
         <option value="5">5 min</option>
+        <option value="6">6 min</option>
+        <option value="7">7 min</option>
+        <option value="8">8 min</option>
+        <option value="9">9 min</option>
         <option value="10">10 min</option>
+        <option value="11">11 min</option>
+        <option value="12">12 min</option>
+        <option value="13">13 min</option>
+        <option value="14">14 min</option>
         <option value="15">15 min</option>
+        <option value="16">16 min</option>
+        <option value="17">17 min</option>
+        <option value="18">18 min</option>
+        <option value="19">19 min</option>
         <option value="20">20 min</option>
-        <option value="25">25 min</option>
-        <option value="30">30 min</option>
-        <option value="35">35 min</option>
-        <option value="40">40 min</option>
-        <option value="45">45 min</option>
-        <option value="50">50 min</option>
-        <option value="55">55 min</option>
-        <option value="60">60 min</option>
     </select>
     <br>
     <br>
@@ -50,7 +68,7 @@
     <input type="text" id="varEnergy" placeholder="Energy in kJ">
     <br>
     <br>
-    <button class="btn btn-primary" type="button" style="width: 100%; margin: 2px; padding: 3px" + onclick="computeConture()">
+    <button class="btn btn-primary" type="button" style="width: 45%; margin: 2px; padding: 3px" + onclick="computeConture()">
         Start
     </button>
 
@@ -106,6 +124,14 @@
     });
 
 
+    var dropdown2 = document.getElementById('varKonture');
+    var selectedVarKonture = '';
+
+    selectedVarKonture = dropdown2.options[0].value;
+    dropdown2.addEventListener("change", function () {
+        selectedVarKonture = dropdown2.options[dropdown.selectedIndex].value
+    });
+
 
 
     function computeConture() {
@@ -117,8 +143,8 @@
 
         $.ajax({
              type: "POST",
-             url: "@Url.Action("ComputeConture")",
-            data: { longitude: longitude, latitude: latitude, selectedType: selectedType, selectedVarTime: selectedVarTime, selectedVarEnergy: selectedVarEnergy, strVrijemePocetka: 0 },
+            url: "@Url.Action("ComputeConture")",
+            data: { longitude: longitude, latitude: latitude, selectedType: selectedType, selectedVarTime: selectedVarTime, selectedVarEnergy: selectedVarEnergy, selectedVarKonture: selectedVarKonture, strVrijemePocetka: 0 },
             success: succesfullCall,//Funkcija koja se poziva ako je poziv bio uspješan
             failure: function (response) {
             //Ispiši grešku u malom prozorčiću

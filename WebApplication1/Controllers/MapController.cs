@@ -81,7 +81,7 @@ namespace WebApplication1.Controllers
 
         // public ActionResult ComputeConture(double x, double y, string type, double trTime, double trEner, string typeCountreMethod)
         [HttpPost]
-        public ActionResult ComputeConture(string longitude, string latitude, string selectedType, string selectedVarTime, string selectedVarEnergy, string strVrijemePocetka)
+        public ActionResult ComputeConture(string longitude, string latitude, string selectedType, string selectedVarTime, string selectedVarEnergy, string selectedVarKonture, string strVrijemePocetka)
         {
             double dlongitude = Convert.ToDouble(longitude.Replace('.',','));
             double dlatitude = Convert.ToDouble(latitude.Replace('.', ','));
