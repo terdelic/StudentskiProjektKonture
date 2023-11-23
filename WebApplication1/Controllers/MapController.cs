@@ -90,7 +90,7 @@ namespace WebApplication1.Controllers
             pocetak = PronadiNajbliziLink(dlongitude, dlatitude);
 
             //Pozovi dijkstru kroz FibonacciHeap metodu
-            if (selectedType == "premaEnergiji")
+            if (selectedType == "energy")
             {
                 string izbor = "energija prosjecna";
                 FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
