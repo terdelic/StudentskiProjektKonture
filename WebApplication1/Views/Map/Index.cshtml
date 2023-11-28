@@ -473,6 +473,7 @@
 
     function computeConture() {
 
+        
         // Event listeners for radio buttons
         $(document).ready(function () {
             $('input[name="optionsRadios"]').on('change', function () {
@@ -502,6 +503,9 @@
 
     }
 
+
+
+
     function succesfullCall(response) {
         console.log(response);
 
@@ -523,12 +527,18 @@
             features: [polygonFeature]
         });
 
-        color = random_rgba();
-        console.log(color);
-        // Define the style for the vector layer
+        // Get the next color index from the presets array
+        var colorIndex = lastColorIndex % colorPresets.length;
+        lastColorIndex++;
+
+        // Use the color index to get the corresponding color from the presets array
+        var color = colorPresets[colorIndex];
+
+
+        // Define the style for the vector layer with the chosen color
         var vectorStyle = new ol.style.Style({
             fill: new ol.style.Fill({
-                color: color// Red color with 50% transparency
+                color: color
             }),
             stroke: new ol.style.Stroke({
                 color: color,
@@ -542,12 +552,14 @@
             style: vectorStyle
         });
 
+        
 
         map.addLayer(vectorLayer);
 
         // Create a badge element
         var badge = document.createElement('span');
-        badge.className = 'badge rounded-pill bg-danger';
+        badge.className = 'badge rounded-pill';
+        badge.style.backgroundColor = color;  // Set the background color of the badge
         badge.textContent = 'Layer Created';
 
         badge.style.fontFamily = 'Century Gothic';
@@ -569,11 +581,19 @@
 
     }
 
-    // Funkcija za stvaranje slučajne boje
-    function random_rgba() {
-        var o = Math.round, r = Math.random, s = 255;
-        return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',0.5)';
-    }
+    var lastColorIndex = 0; // Keep track of the last used color index
+    var colorPresets = [
+        'rgba(255, 0, 0, 0.5)',     // Red
+        'rgba(0, 255, 0, 0.5)',     // Green
+        'rgba(0, 0, 255, 0.5)',     // Blue
+        'rgba(255, 255, 0, 0.5)',   // Yellow
+        'rgba(255, 0, 255, 0.5)',   // Magenta
+        'rgba(0, 255, 255, 0.5)',   // Cyan
+        'rgba(128, 0, 0, 0.5)',     // Maroon
+        'rgba(0, 128, 0, 0.5)',     // Green (a bit darker)
+        'rgba(0, 0, 128, 0.5)',     // Navy
+        'rgba(128, 128, 0, 0.5)'    // Olive
+    ];
 
 
 </script>
