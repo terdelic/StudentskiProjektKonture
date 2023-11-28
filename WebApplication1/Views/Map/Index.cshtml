@@ -42,20 +42,19 @@
 
         <style>
             .main-button, .side-button {
-                /* Removed margin-bottom */
                 display: flex;
                 align-items: center;
-                background-color: black; /* Set background color of buttons */
-                color: white; /* Set text color of buttons */
-                border-color: black; /* Set border color of buttons */
-                width: 100%; /* Set the width to 100% */
-                padding: 0px; /* Set padding */
-                height: 100px; /* Set the height of the buttons */
+                background-color: black;
+                color: white;
+                border-color: black;
+                width: 100%;
+                padding: 0px;
+                height: 100px;
             }
 
                 .main-button i {
-                    font-size: 20px; /* Set the font size for the main buttons' icons */
-                    margin-right: 10px; /* Adjust margin as needed */
+                    font-size: 20px;
+                    margin-right: 10px;
                 }
 
             .panel {
@@ -65,8 +64,16 @@
 
             .side-button {
                 display: block;
-                margin-top: 0; /* Remove margin between buttons */
+                margin-top: 0;
             }
+
+            .selected {
+                background-color: #3b5998;
+            }
+
+                .selected i {
+                    color: #ffffff;
+                }
         </style>
         <title>Button Panel Example</title>
     </head>
@@ -86,39 +93,22 @@
         <script>
             let selectedType = "none";
             let KontureType = "none";
-            let currentPanel = null;
 
             function togglePanel(panelId) {
                 const panel = document.getElementById(panelId);
 
                 if (panel.style.display === 'none' || panel.style.display === '') {
-                    if (currentPanel && currentPanel !== panel) {
-                        // If another panel is open, close it
-                        currentPanel.style.display = 'none';
-                        clearPanel(currentPanel);
-                    }
-
                     panel.style.display = 'block';
-                    currentPanel = panel;
 
-                    if (panelId === 'panel1') {
+                    if (panelId === 'panel1' && panel.childElementCount === 0) {
                         initializePanel1();
-                    } else if (panelId === 'panel2') {
+                    } else if (panelId === 'panel2' && panel.childElementCount === 0) {
                         initializePanel2();
                     }
                 } else {
                     panel.style.display = 'none';
-                    clearPanel(panel);
-                    currentPanel = null;
                 }
             }
-
-            function clearPanel(panel) {
-                while (panel.firstChild) {
-                    panel.removeChild(panel.firstChild);
-                }
-            }
-
 
             function initializePanel1() {
                 const panelButton1 = createPanelButton('Time', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton1', 'panelButton2', 'time', 'energy');
@@ -126,6 +116,10 @@
 
                 document.getElementById('panel1').appendChild(panelButton1);
                 document.getElementById('panel1').appendChild(panelButton2);
+
+                // Restore selected state
+                restoreSelectedState(panelButton1);
+                restoreSelectedState(panelButton2);
             }
 
             function initializePanel2() {
@@ -134,6 +128,10 @@
 
                 document.getElementById('panel2').appendChild(panelButton3);
                 document.getElementById('panel2').appendChild(panelButton4);
+
+                // Restore selected state
+                restoreSelectedState(panelButton3);
+                restoreSelectedState(panelButton4);
             }
 
             function createPanelButton(text, className, defaultIconClass, toggleIconClass, buttonId, otherButtonId, type, otherType) {
@@ -158,21 +156,41 @@
                     panelButton.firstChild.className = toggleIconClass;
                     otherButton.firstChild.className = defaultIconClass;
 
-                    selectedType = type;
-                    console.log(`Selected Type: ${selectedType}`);
-
                     if (type === 'concave' || type === 'convex') {
                         KontureType = `${text} Hull`;
                         console.log(`KontureType changed to: ${KontureType}`);
+                        console.log(`Selected Type: ${selectedType}`);
                     }
+
+                    if (type === 'time' || type === 'energy') {
+                        selectedType = type;
+                        console.log(`KontureType changed to: ${KontureType}`);
+                        console.log(`Selected Type: ${selectedType}`);
+                    }
+                    
                 });
 
                 return panelButton;
+            }
+
+            function restoreSelectedState(button) {
+                const selectedType = button.firstChild.className === 'fa-regular fa-circle-xmark' ? button.id : null;
+                if (selectedType) {
+                    button.classList.add('selected');
+                    button.firstChild.className = 'fa-regular fa-circle-xmark';
+                }
             }
         </script>
 
     </body>
 </html>
+
+
+
+
+
+
+
 
 
 
@@ -295,10 +313,46 @@
 </button>
 
 
-<div class="alert alert-dismissible alert-success">
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    <strong>Well done!</strong> You successfully read <a href="#" class="alert-link">this important alert message</a>.
+<!-- Modal -->
+<div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mapModalLabel">Coordinates</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="coordinatesText">Latitude: <span id="latitudeValue"></span>, Longitude: <span id="longitudeValue"></span></p>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    map.on('dblclick', function (event) {
+        var koordinate = ol.proj.toLonLat(event.coordinate);
+
+        longitude = koordinate[0];
+        latitude = koordinate[1];
+
+        document.getElementById('txtLatitude').value = latitude;
+        document.getElementById('txtLongitude').value = longitude;
+
+        // Update the modal text with dynamic values
+        document.getElementById('latitudeValue').innerHTML = latitude;
+        document.getElementById('longitudeValue').innerHTML = longitude;
+
+        // Show the modal
+        var mapModal = new bootstrap.Modal(document.getElementById('mapModal'));
+        mapModal.show();
+    });
+</script>
+
+
+
+
+
+
 
 
 
