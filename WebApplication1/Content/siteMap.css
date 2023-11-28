@@ -15,13 +15,13 @@
 /*Div container za opcije u sidebaru*/
 #divOptions {
     /*border: 2px solid #cccccc;*/
-    background-color: #333333;
+    background-color: black;
     position: absolute;
     left: 0px;
     right: 100% - 150px;
     top: 107px;
     bottom: 0%;
-    background: white;
+    background: black;
     z-index: 6;
 }
 
@@ -48,6 +48,8 @@ html {
 
 body {
     margin-bottom: 60px;
+    background: black;
+    font-family: 'Century Gothic', sans-serif;
 }
 
 label.labelLeft {
