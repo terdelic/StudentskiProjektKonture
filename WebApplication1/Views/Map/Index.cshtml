@@ -249,12 +249,13 @@
             <div class="col-md-6">
                 <fieldset class="form-group">
                     <legend class="mt-4 slider-label"><i class="fa-regular fa-clock"></i>&nbsp;&nbsp;Time</legend>
+                    <br />
+                    <br />
                     <div class="slider-container">
                         <div class="position-relative">
                             <input type="range" class="form-range" min="0" max="20" step="1" id="customRange1" oninput="updateValue('value1', this.value, 'label1')">
                             <div id="value1" class="slider-value"></div>
                         </div>
-                        <br />
                         <span class="slider-text">in minutes</span>
                     </div>
                 </fieldset>
@@ -264,12 +265,13 @@
             <div class="col-md-6">
                 <fieldset class="form-group">
                     <legend class="mt-4 slider-label"><i class="fa-solid fa-bolt"></i>&nbsp;&nbsp;Energy</legend>
+                    <br />
+                    <br />
                     <div class="slider-container">
                         <div class="position-relative">
                             <input type="range" class="form-range" min="0" max="2" step="0.05" id="customRange2" oninput="updateValue('value2', this.value, 'label2')">
                             <div id="value2" class="slider-value"></div>
                         </div>
-                        <br />
                         <span class="slider-text">in kWh</span>
                     </div>
                 </fieldset>
@@ -336,18 +338,21 @@
             border: none; /* Remove the border */
             color: white; /* Set the text color to white */
             padding: 5px; /* Add padding for better appearance */
+            max-width: 150px;
         }
     </style>
     <title>Location Example</title>
 </head>
 <body>
     <label><i class="fas fa-x"></i>&nbsp;&nbsp;Latitude:&nbsp;&nbsp;&nbsp;</label>
-    <input type="text" id="txtLatitude" readonly="true">
+    <input type="text" id="txtLatitude" readonly="true" disabled />
     <br>
     <label><i class="fas fa-y"></i>&nbsp;&nbsp;Longitude:</label>
-    <input type="text" id="txtLongitude" readonly="true">
+    <input type="text" id="txtLongitude" readonly="true" disabled />
 </body>
 </html>
+
+
 
 
 
@@ -357,7 +362,6 @@
     <i class="fa-regular fa-circle-play" style="font-size: 20px; margin-left: 10px; margin-right: 15px;"></i>
     Start
 </button>
-
 
 
 
