@@ -96,7 +96,7 @@ namespace WebApplication1.Controllers
                 FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
                 n = Convert.ToDouble(selectedVarEnergy);
             }
-            else
+            else if (selectedType == "time")
             {
                 string izbor = "vrijeme";
                 FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);

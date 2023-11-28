@@ -18,17 +18,7 @@
 
 
 
-<div id="divOptions" style="background-color: white; font-family: serif; font-weight: bold; color: dodgerblue;">
-
-    <label>Latitude</label>
-    <input type="text" id="txtLatitude" readonly="true">
-    <br>
-    <label>Longitude</label>
-    <input type="text" id="txtLongitude" readonly="true">
-    <br>
-
-
-
+<div id="divOptions" style="background-color: black; font-family: serif; font-weight: bold; color: #333333;">
 
 
 
@@ -41,21 +31,29 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
         <style>
+
             .main-button, .side-button {
-                /* Removed margin-bottom */
                 display: flex;
                 align-items: center;
-                background-color: black; /* Set background color of buttons */
-                color: white; /* Set text color of buttons */
-                border-color: black; /* Set border color of buttons */
-                width: 100%; /* Set the width to 100% */
-                padding: 0px; /* Set padding */
-                height: 100px; /* Set the height of the buttons */
+                background-color: #000000;
+                color: white;
+                border-color: black;
+                width: 100%;
+                padding: 0px;
+                height: 75px;
+                font-family: 'Century Gothic', sans-serif; /* Set font-family to Century Gothic */
             }
 
                 .main-button i {
-                    font-size: 20px; /* Set the font size for the main buttons' icons */
-                    margin-right: 10px; /* Adjust margin as needed */
+                    font-size: 20px;
+                    margin-left: 10px;
+                    margin-right: 15px;
+                }
+
+                .side-button i {
+                    font-size: 8px;
+                    margin-left: 25px;
+                    margin-right: 10px;
                 }
 
             .panel {
@@ -65,8 +63,17 @@
 
             .side-button {
                 display: block;
-                margin-top: 0; /* Remove margin between buttons */
+                margin-top: 0;
+                text-align: left;
             }
+
+            .selected {
+                background-color: #3b5998;
+            }
+
+                .selected i {
+                    color: #ffffff;
+                }
         </style>
         <title>Button Panel Example</title>
     </head>
@@ -86,39 +93,22 @@
         <script>
             let selectedType = "none";
             let KontureType = "none";
-            let currentPanel = null;
 
             function togglePanel(panelId) {
                 const panel = document.getElementById(panelId);
 
                 if (panel.style.display === 'none' || panel.style.display === '') {
-                    if (currentPanel && currentPanel !== panel) {
-                        // If another panel is open, close it
-                        currentPanel.style.display = 'none';
-                        clearPanel(currentPanel);
-                    }
-
                     panel.style.display = 'block';
-                    currentPanel = panel;
 
-                    if (panelId === 'panel1') {
+                    if (panelId === 'panel1' && panel.childElementCount === 0) {
                         initializePanel1();
-                    } else if (panelId === 'panel2') {
+                    } else if (panelId === 'panel2' && panel.childElementCount === 0) {
                         initializePanel2();
                     }
                 } else {
                     panel.style.display = 'none';
-                    clearPanel(panel);
-                    currentPanel = null;
                 }
             }
-
-            function clearPanel(panel) {
-                while (panel.firstChild) {
-                    panel.removeChild(panel.firstChild);
-                }
-            }
-
 
             function initializePanel1() {
                 const panelButton1 = createPanelButton('Time', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton1', 'panelButton2', 'time', 'energy');
@@ -126,6 +116,10 @@
 
                 document.getElementById('panel1').appendChild(panelButton1);
                 document.getElementById('panel1').appendChild(panelButton2);
+
+                // Restore selected state
+                restoreSelectedState(panelButton1);
+                restoreSelectedState(panelButton2);
             }
 
             function initializePanel2() {
@@ -134,6 +128,10 @@
 
                 document.getElementById('panel2').appendChild(panelButton3);
                 document.getElementById('panel2').appendChild(panelButton4);
+
+                // Restore selected state
+                restoreSelectedState(panelButton3);
+                restoreSelectedState(panelButton4);
             }
 
             function createPanelButton(text, className, defaultIconClass, toggleIconClass, buttonId, otherButtonId, type, otherType) {
@@ -158,25 +156,34 @@
                     panelButton.firstChild.className = toggleIconClass;
                     otherButton.firstChild.className = defaultIconClass;
 
-                    selectedType = type;
-                    console.log(`Selected Type: ${selectedType}`);
-
                     if (type === 'concave' || type === 'convex') {
                         KontureType = `${text} Hull`;
                         console.log(`KontureType changed to: ${KontureType}`);
+                        console.log(`Selected Type: ${selectedType}`);
                     }
+
+                    if (type === 'time' || type === 'energy') {
+                        selectedType = type;
+                        console.log(`KontureType changed to: ${KontureType}`);
+                        console.log(`Selected Type: ${selectedType}`);
+                    }
+
                 });
 
                 return panelButton;
+            }
+
+            function restoreSelectedState(button) {
+                const selectedType = button.firstChild.className === 'fa-regular fa-circle-xmark' ? button.id : null;
+                if (selectedType) {
+                    button.classList.add('selected');
+                    button.firstChild.className = 'fa-regular fa-circle-xmark';
+                }
             }
         </script>
 
     </body>
 </html>
-
-
-
-
 
 
 
@@ -190,7 +197,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3PBnv4efUshCtN+flQ02Orj8ajCfbqFu1A6LuhMabOfFQyMOh" crossorigin="anonymous">
     <style>
+        body {
+            font-family: 'Century Gothic', sans-serif;
+            color: white;
+        }
+
         .slider-value {
+            font-family: 'Century Gothic', sans-serif;
             position: absolute;
             bottom: 30px; /* Adjust the distance from the slider handle */
             background-color: white;
@@ -202,21 +215,30 @@
             width: 30px; /* Adjust the width of the box */
             transform: translateX(-50%); /* Center the box horizontally */
             display: none; /* Initially hide the box */
+            font-size: 16px;
         }
 
         .slider-label {
+            font-family: 'Century Gothic', sans-serif;
             text-align: left; /* Align labels to the left */
+            font-size: 20px;
+            color: white;
         }
 
         .slider-text {
+            font-family: 'Century Gothic', sans-serif;
             text-align: right; /* Align text below sliders to the right */
             margin-top: 8px; /* Add top margin for better spacing */
+            font-size: 14px;
+            color: white;
         }
 
         .slider-container {
+            font-family: 'Century Gothic', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
+            font-size: 20px;
         }
     </style>
     <title>Slider Example</title>
@@ -226,7 +248,7 @@
         <div class="row">
             <div class="col-md-6">
                 <fieldset class="form-group">
-                    <legend class="mt-4 slider-label">Time</legend>
+                    <legend class="mt-4 slider-label"><i class="fa-regular fa-clock"></i>&nbsp;&nbsp;Time</legend>
                     <div class="slider-container">
                         <div class="position-relative">
                             <input type="range" class="form-range" min="0" max="20" step="1" id="customRange1" oninput="updateValue('value1', this.value, 'label1')">
@@ -241,7 +263,7 @@
         <div class="row">
             <div class="col-md-6">
                 <fieldset class="form-group">
-                    <legend class="mt-4 slider-label">Energy</legend>
+                    <legend class="mt-4 slider-label"><i class="fa-solid fa-bolt"></i>&nbsp;&nbsp;Energy</legend>
                     <div class="slider-container">
                         <div class="position-relative">
                             <input type="range" class="form-range" min="0" max="2" step="0.05" id="customRange2" oninput="updateValue('value2', this.value, 'label2')">
@@ -286,19 +308,58 @@
 </body>
 </html>
 
+<br />
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Add the Font Awesome library link here if not included -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-cJXfV5A5q3GxdxMXQ/Rqe5ePdiZ/S3U6f5nI+YXg6lN7L2SRfi4a/7FmC5P9Yfo4" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: 'Century Gothic', sans-serif;
+        }
+
+        label {
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 14px;
+            color: white;
+            margin-left: 10px;
+        }
+
+        input {
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 14px;
+            background-color: black; /* Set the background color to black */
+            border: none; /* Remove the border */
+            color: white; /* Set the text color to white */
+            padding: 5px; /* Add padding for better appearance */
+        }
+    </style>
+    <title>Location Example</title>
+</head>
+<body>
+    <label><i class="fas fa-x"></i>&nbsp;&nbsp;Latitude:&nbsp;&nbsp;&nbsp;</label>
+    <input type="text" id="txtLatitude" readonly="true">
+    <br>
+    <label><i class="fas fa-y"></i>&nbsp;&nbsp;Longitude:</label>
+    <input type="text" id="txtLongitude" readonly="true">
+</body>
+</html>
+
+
 
 
 <br>
 <button class="btn btn-lg btn-primary main-button" type="button" style="width: 100%; margin: 2px 0; padding: 10px" onclick="computeConture()">
-    <i class="fa-regular fa-circle-play" style="font-size: 20px; margin-right: 10px;"></i>
+    <i class="fa-regular fa-circle-play" style="font-size: 20px; margin-left: 10px; margin-right: 15px;"></i>
     Start
 </button>
 
 
-<div class="alert alert-dismissible alert-success">
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    <strong>Well done!</strong> You successfully read <a href="#" class="alert-link">this important alert message</a>.
-</div>
+
 
 
 
@@ -346,7 +407,7 @@
     });
 
     //Varijable
-        
+
 
 
 

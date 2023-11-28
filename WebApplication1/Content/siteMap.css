@@ -1,4 +1,6 @@
-﻿/*Div container za kartu*/
+﻿
+
+/*Div container za kartu*/
 #divMap {
     border: 2px solid #cccccc;
     position: absolute;
@@ -13,6 +15,7 @@
 /*Div container za opcije u sidebaru*/
 #divOptions {
     /*border: 2px solid #cccccc;*/
+    background-color: #333333;
     position: absolute;
     left: 0px;
     right: 100% - 150px;
@@ -21,6 +24,7 @@
     background: white;
     z-index: 6;
 }
+
 
 
 
