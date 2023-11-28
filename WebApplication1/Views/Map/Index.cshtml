@@ -26,13 +26,6 @@
     <label>Longitude</label>
     <input type="text" id="txtLongitude" readonly="true">
     <br>
-    <br>
-    <select id="varKonture">
-        <option value="Concave Hull">Concave Hull</option>
-        <option value="Convex Hull">Convex Hull</option>
-    </select>
-    <br>
-    <br>
 
 
 
@@ -59,6 +52,7 @@
                 padding: 0px; /* Set padding */
                 height: 100px; /* Set the height of the buttons */
             }
+
                 .main-button i {
                     font-size: 20px; /* Set the font size for the main buttons' icons */
                     margin-right: 10px; /* Adjust margin as needed */
@@ -90,70 +84,87 @@
         </div>
 
         <script>
+            let selectedType = "none";
+            let KontureType = "none";
+            let currentPanel = null;
+
             function togglePanel(panelId) {
                 const panel = document.getElementById(panelId);
 
                 if (panel.style.display === 'none' || panel.style.display === '') {
+                    if (currentPanel && currentPanel !== panel) {
+                        // If another panel is open, close it
+                        currentPanel.style.display = 'none';
+                        clearPanel(currentPanel);
+                    }
+
                     panel.style.display = 'block';
+                    currentPanel = panel;
 
                     if (panelId === 'panel1') {
-                        // Create two buttons for the first panel
-                        const panelButton1 = createPanelButton('Time', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton1', 'panelButton2');
-                        const panelButton2 = createPanelButton('Energy', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton2', 'panelButton1');
-
-                        // Append the buttons to the panel
-                        panel.appendChild(panelButton1);
-                        panel.appendChild(panelButton2);
+                        initializePanel1();
                     } else if (panelId === 'panel2') {
-                        // Create two buttons for the second panel
-                        const panelButton3 = createPanelButton('Concave', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton3', 'panelButton4');
-                        const panelButton4 = createPanelButton('Convex', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton4', 'panelButton3');
-
-                        // Append the buttons to the panel
-                        panel.appendChild(panelButton3);
-                        panel.appendChild(panelButton4);
+                        initializePanel2();
                     }
                 } else {
                     panel.style.display = 'none';
-
-                    // Remove the buttons from the panel
-                    while (panel.firstChild) {
-                        panel.removeChild(panel.firstChild);
-                    }
+                    clearPanel(panel);
+                    currentPanel = null;
                 }
             }
 
-            function createPanelButton(text, className, defaultIconClass, toggleIconClass, buttonId, otherButtonId) {
+            function clearPanel(panel) {
+                while (panel.firstChild) {
+                    panel.removeChild(panel.firstChild);
+                }
+            }
+
+
+            function initializePanel1() {
+                const panelButton1 = createPanelButton('Time', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton1', 'panelButton2', 'time', 'energy');
+                const panelButton2 = createPanelButton('Energy', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton2', 'panelButton1', 'energy', 'time');
+
+                document.getElementById('panel1').appendChild(panelButton1);
+                document.getElementById('panel1').appendChild(panelButton2);
+            }
+
+            function initializePanel2() {
+                const panelButton3 = createPanelButton('Concave', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton3', 'panelButton4', 'concave', 'convex');
+                const panelButton4 = createPanelButton('Convex', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton4', 'panelButton3', 'convex', 'concave');
+
+                document.getElementById('panel2').appendChild(panelButton3);
+                document.getElementById('panel2').appendChild(panelButton4);
+            }
+
+            function createPanelButton(text, className, defaultIconClass, toggleIconClass, buttonId, otherButtonId, type, otherType) {
                 const panelButton = document.createElement('button');
                 panelButton.className = `btn btn-lg btn-primary ${className}`;
                 panelButton.type = 'button';
                 panelButton.id = buttonId;
 
-                // Create the default icon element
                 const defaultIconElement = document.createElement('i');
                 defaultIconElement.className = defaultIconClass;
                 defaultIconElement.style.fontSize = '15px';
 
-                // Append the default icon to the button
                 panelButton.appendChild(defaultIconElement);
 
-                // Append the text to the button
                 panelButton.innerHTML += ` ${text}`;
 
-                // Add a click event listener to the button to handle its action
                 panelButton.addEventListener('click', function () {
                     console.log(`${text} clicked`);
 
-                    // Get the other button in the panel
                     const otherButton = document.getElementById(otherButtonId);
 
-                    // Set the clicked button icon to the toggle icon
                     panelButton.firstChild.className = toggleIconClass;
-
-                    // Set the other button icon back to the default icon
                     otherButton.firstChild.className = defaultIconClass;
 
-                    // Add your custom logic here
+                    selectedType = type;
+                    console.log(`Selected Type: ${selectedType}`);
+
+                    if (type === 'concave' || type === 'convex') {
+                        KontureType = `${text} Hull`;
+                        console.log(`KontureType changed to: ${KontureType}`);
+                    }
                 });
 
                 return panelButton;
@@ -165,42 +176,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<fieldset class="form-group">
-    <legend class="mt-4">Attributes</legend>
-    <div class="form-check">
-        <input class="form-check-input" type="radio" name="optionsRadios" id="time" value="time">
-        <label class="form-check-label" for="optionsRadios1">
-            Time
-        </label>
-    </div>
-    <div class="form-check">
-        <input class="form-check-input" type="radio" name="optionsRadios" id="energy" value="energy">
-        <label class="form-check-label" for="optionsRadios2">
-            Energy
-        </label>
-    </div>
-</fieldset>
-
-<input type="hidden" id="selectedAttribute" name="selectedAttribute" value="">
 
 
 
@@ -314,9 +289,16 @@
 
 
 <br>
-<button class="btn btn-primary" type="button" style="width: 45%; margin: 2px; padding: 3px" + onclick="computeConture()">
+<button class="btn btn-lg btn-primary main-button" type="button" style="width: 100%; margin: 2px 0; padding: 10px" onclick="computeConture()">
+    <i class="fa-regular fa-circle-play" style="font-size: 20px; margin-right: 10px;"></i>
     Start
 </button>
+
+
+<div class="alert alert-dismissible alert-success">
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <strong>Well done!</strong> You successfully read <a href="#" class="alert-link">this important alert message</a>.
+</div>
 
 
 
@@ -364,19 +346,7 @@
     });
 
     //Varijable
-
-
-
-    //varijabla za Odabir vremena
-
-
-    var dropdown2 = document.getElementById('varKonture');
-    var selectedVarKonture = '';
-
-    selectedVarKonture = dropdown2.options[0].value;
-    dropdown2.addEventListener("change", function () {
-        selectedVarKonture = dropdown2.options[dropdown.selectedIndex].value
-    });
+        
 
 
 
@@ -396,12 +366,12 @@
         console.log('Selected Type:', $('#selectedAttribute').val());
         console.log('Selected Var Time:', $('#hidden1').val());
         console.log('Selected Var Energy:', $('#hidden2').val());
-        console.log('Selected Var Konture:', selectedVarKonture);
+        console.log('Selected Konture Type:', KontureType);
 
         $.ajax({
              type: "POST",
             url: "@Url.Action("ComputeConture")",
-            data: { longitude: longitude, latitude: latitude, selectedType: $('#selectedAttribute').val(), selectedVarTime: $('#hidden1').val(), selectedVarEnergy: $('#hidden2').val(), selectedVarKonture: selectedVarKonture, strVrijemePocetka: 0 },
+            data: { longitude: longitude, latitude: latitude, selectedType: selectedType, selectedVarTime: $('#hidden1').val(), selectedVarEnergy: $('#hidden2').val(), KontureType: KontureType, strVrijemePocetka: 0 },
             success: succesfullCall,//Funkcija koja se poziva ako je poziv bio uspješan
             failure: function (response) {
             //Ispiši grešku u malom prozorčiću
