@@ -76,15 +76,21 @@ label.labelLeft {
 
 .sidebar {
     position: absolute;
-    width: 60px;
+    width: 45px;
     height: 100vh;
     background: black;
     overflow: hidden;
     transition: 0.5s;
     left: 0px;
-    top: 107px;
+    top: 45px;
     z-index: 100000 !important;
 }
-.sidebar:hover {
-    width: 250px;
-}
+    
+
+    .sidebar .main-button {
+        width: 100%;
+    }
+    .sidebar.open {
+        left: 0;
+        width:275px;
+    }

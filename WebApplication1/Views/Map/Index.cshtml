@@ -169,7 +169,13 @@
 <body>
     <div class="sidebar">
 
-        
+        <div class="d-grid gap">
+            <button class="btn btn-lg btn-primary main-button" type="button">
+                <i class="fa-solid fa-bars"></i> Menu
+            </button>            
+        </div>
+
+
 
         <div class="d-grid gap">
             <button class="btn btn-lg btn-primary main-button" type="button" onclick="togglePanel('panel1')">
@@ -344,6 +350,20 @@
             // Automatically submit the form when slider values change
             submitForm();
         }
+
+        document.querySelector('.main-button').addEventListener('click', function () {
+            toggleSidebar();
+        });
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+
+            if (sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            } else {
+                sidebar.classList.add('open');
+            }
+        }
     </script>
 
 
@@ -493,7 +513,7 @@
         var pillButton = document.createElement('span');
         pillButton.className = 'badge rounded-pill d-flex justify-content-between align-items-center';
         pillButton.style.backgroundColor = color;
-        pillButton.style.width = '50px'
+        pillButton.style.width = '65px'
 
         // Create a span for the layer created text
         var layerText = document.createElement('span');
