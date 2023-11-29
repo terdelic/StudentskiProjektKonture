@@ -42,10 +42,12 @@
                 margin-left: 25px;
                 margin-right: 10px;
             }
+
         .btn i,
         .btn span {
             color: gray;
         }
+
         .btn:hover {
             background-color: transparent !important;
         }
@@ -78,6 +80,7 @@
             font-family: 'Century Gothic', sans-serif;
             color: white;
         }
+
         .slider-value {
             font-family: 'Century Gothic', sans-serif;
             position: absolute;
@@ -159,6 +162,7 @@
                 border-radius: 5px; /* Set border-radius for rounded edges */
                 background-color: white; /* Set the color of the slider track */
             }
+
         label {
             font-family: 'Century Gothic', sans-serif;
             font-size: 14px;
@@ -175,6 +179,7 @@
             padding: 5px; /* Add padding for better appearance */
             max-width: 150px;
         }
+
         .badge:hover {
             cursor: pointer;
         }
@@ -188,7 +193,7 @@
         <div class="d-grid gap">
             <button class="btn btn-lg btn-primary main-button" type="button">
                 <i class="fa-solid fa-bars"></i> Menu
-            </button>            
+            </button>
         </div>
 
 
@@ -240,11 +245,7 @@
             <input type="hidden" id="hidden1" name="customRange1">
             <input type="hidden" id="hidden2" name="customRange2">
         </div>
-        <label><i class="fas fa-x"></i>&nbsp;&nbsp;Latitude:&nbsp;&nbsp;&nbsp;</label>
-        <input type="text" id="txtLatitude" readonly="true" disabled />
-        <br>
-        <label><i class="fas fa-y" style="margin: 1px; top: 0px"></i>&nbsp;&nbsp;Longitude:</label>
-        <input type="text" id="txtLongitude" readonly="true" disabled />
+
 
         <br>
         <button class="btn btn-lg btn-primary main-button" type="button" style="width: 100%; margin: 0px; padding: 10px" onclick="computeConture()">
@@ -389,6 +390,61 @@
 
 <div id="divMap"></div>
 
+<<div id="customAlert" class="custom-alert" style="display: none;">
+    <span id="alertIcon" class="alert-icon"></span>
+    <span id="alertText">Longitude: 0 Latitude: 0</span>
+    <span id="closeAlert" class="close-btn" onclick="closeCustomAlert()">×</span>
+</div>
+
+<label><i class="fas fa-x"></i>&nbsp;&nbsp;Latitude:&nbsp;&nbsp;&nbsp;</label>
+<input type="text" id="txtLatitude" readonly="true" disabled />
+<br>
+<label><i class="fas fa-y" style="margin: 1px; top: 0px"></i>&nbsp;&nbsp;Longitude:</label>
+<input type="text" id="txtLongitude" readonly="true" disabled />
+
+
+
+<style>
+    .custom-alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: rgba(76, 175, 80, 0.95); /* Use rgba for transparency */
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+        z-index: 100000 !important;
+        width: 250px;
+        font-size: 14px;
+        border: 1px solid black;
+    }
+
+
+    #alertText {
+        font-family: 'Century Gothic', sans-serif;
+        /* Add more styles as needed */
+    }
+
+    .alert-icon {
+        /* Add styles for the alert icon */
+        font-family: 'FontAwesome'; /* Assuming you're using FontAwesome for icons */
+        font-size: 16px;
+        margin-right: 10px;
+    }
+
+    .close-btn {
+        cursor: pointer;
+        font-size: 20px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+</style>
+
+
 
 
 
@@ -433,6 +489,34 @@
 
 
     });
+
+    map.on('dblclick', function (event) {
+        var koordinate = ol.proj.toLonLat(event.coordinate);
+
+        longitude = koordinate[0];
+        latitude = koordinate[1];
+
+        document.getElementById('txtLatitude').value = latitude;
+        document.getElementById('txtLongitude').value = longitude;
+
+        // Show and update the custom alert
+        var alertText = document.getElementById('alertText');
+        alertText.textContent = 'Longitude: ' + longitude + ', Latitude: ' + latitude;
+
+        var customAlert = document.getElementById('customAlert');
+        customAlert.style.display = 'flex';
+
+        // Hide the custom alert after 2 seconds (adjust the duration as needed)
+        setTimeout(function () {
+            customAlert.style.display = 'none';
+        }, 10000);
+    });
+
+    // Function to close the custom alert
+    function closeCustomAlert() {
+        var customAlert = document.getElementById('customAlert');
+        customAlert.style.display = 'none';
+    }
 
     //Varijable
 
@@ -565,7 +649,7 @@
             sidebar[0].appendChild(pillButton);
         }
 
-        
+
 
         // Add event listener for double-click on the badge
         closeButton.addEventListener('click', function () {

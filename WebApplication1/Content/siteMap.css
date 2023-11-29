@@ -63,6 +63,7 @@ label.labelLeft {
 
 /*Knez*/
 .slider-value {
+    font-family: 'Century Gothic', sans-serif;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -92,5 +93,5 @@ label.labelLeft {
     }
     .sidebar.open {
         left: 0;
-        width:275px;
+        width:240px;
     }
