@@ -613,7 +613,12 @@
         var pillButton = document.createElement('span');
         pillButton.className = 'badge rounded-pill d-flex justify-content-between align-items-center';
         pillButton.style.backgroundColor = color;
-        pillButton.style.width = '65px'
+        pillButton.style.width = '85px'; // Increased width to accommodate the checkmark
+
+        // Create a span for the checkmark icon
+        var checkmarkIcon = document.createElement('i');
+        checkmarkIcon.className = 'fas fa-check'; // You may need to adjust the class based on your FontAwesome setup
+        checkmarkIcon.style.marginRight = '5px'; // Add some margin to the right of the icon
 
         // Create a span for the layer created text
         var layerText = document.createElement('span');
@@ -625,11 +630,21 @@
         closeButton.style.cursor = 'pointer';
         closeButton.style.marginLeft = '5px';
 
-        // Append layerText and closeButton to the pillButton
-        pillButton.appendChild(layerText);
-        pillButton.appendChild(closeButton);
+        // Add event listener for click on the pill button
+        pillButton.addEventListener('click', function () {
+            // Toggle the visibility of the layer
+            vectorLayer.setVisible(!vectorLayer.getVisible());
 
-        // ...
+            // Toggle the visibility of the checkmark icon
+            checkmarkIcon.style.display = vectorLayer.getVisible() ? 'inline' : 'none';
+
+            // Update the text content based on the layer's visibility
+            layerText.textContent = vectorLayer.getVisible() ? 'Layer' : 'Layer';
+
+            // Modify the width of the pillButton based on layer visibility
+            pillButton.style.width = vectorLayer.getVisible() ? '80px' : '65px';
+
+        });
 
         // Add event listener for click on the close button
         closeButton.addEventListener('click', function () {
@@ -637,8 +652,13 @@
             map.removeLayer(vectorLayer); // assuming vectorLayer is the layer you want to remove
             console.log('Layer deleted!');
             // Remove the pillButton from the sidebar
-            sidebar.removeChild(pillButton);
+            sidebar[0].removeChild(pillButton);
         });
+
+        // Append the checkmarkIcon, layerText, and closeButton to the pillButton
+        pillButton.appendChild(checkmarkIcon);
+        pillButton.appendChild(layerText);
+        pillButton.appendChild(closeButton);
 
         // ...
 
@@ -650,15 +670,6 @@
         }
 
 
-
-        // Add event listener for double-click on the badge
-        closeButton.addEventListener('click', function () {
-            // Your code to remove the layer from the map
-            map.removeLayer(vectorLayer); // assuming vectorLayer is the layer you want to remove
-            console.log('Layer deleted!');
-            // Remove the pillButton from the sidebar
-            sidebar[0].removeChild(pillButton);
-        });
 
     }
 
