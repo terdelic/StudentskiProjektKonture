@@ -4,13 +4,13 @@
 #divMap {
     border: 2px solid #cccccc;
     position: absolute;
-    left: 150px;
+    left: 0px;
     right: 0%;
-    top: 107px;
+    top: 0px;
     bottom: 0%;
     height: 100%;
     background: #cccccc;
-    z-index: 5;
+    z-index: 1;
 }
 /*Div container za opcije u sidebaru*/
 #divOptions {
@@ -22,7 +22,8 @@
     top: 107px;
     bottom: 0%;
     background: black;
-    z-index: 6;
+    z-index: 2;
+    
 }
 
 
@@ -70,4 +71,20 @@ label.labelLeft {
     border: 1px solid #ccc;
     padding: 3px;
     border-radius: 5px;
+}
+
+
+.sidebar {
+    position: absolute;
+    width: 60px;
+    height: 100vh;
+    background: black;
+    overflow: hidden;
+    transition: 0.5s;
+    left: 0px;
+    top: 107px;
+    z-index: 100000 !important;
+}
+.sidebar:hover {
+    width: 250px;
 }

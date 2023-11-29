@@ -11,199 +11,56 @@
 
 <script src="~/Content/ol.js"></script>
 
-<div id="divMap"></div>
-
-
-
-
-
-
-<div id="divOptions" style="background-color: black; font-family: serif; font-weight: bold;color: black;">
-
-
-
-
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-        <style>
-
-            .main-button, .side-button {
-                display: flex;
-                align-items: center;
-                background-color: #000000;
-                color: white;
-                border-color: black;
-                width: 100%;
-                padding: 0px;
-                height: 75px;
-                font-family: 'Century Gothic', sans-serif; /* Set font-family to Century Gothic */
-            }
-
-                .main-button i {
-                    font-size: 20px;
-                    margin-left: 10px;
-                    margin-right: 15px;
-                }
-
-                .side-button i {
-                    font-size: 8px;
-                    margin-left: 25px;
-                    margin-right: 10px;
-                }
-
-            .panel {
-                display: none;
-                margin-top: 0px;
-            }
-
-            .side-button {
-                display: block;
-                margin-top: 0;
-                text-align: left;
-            }
-
-            .selected {
-                background-color: #3b5998;
-            }
-
-                .selected i {
-                    color: #ffffff;
-                }
-        </style>
-        <title>Button Panel Example</title>
-    </head>
-    <body>
-
-        <div class="d-grid gap">
-            <button class="btn btn-lg btn-primary main-button" type="button" onclick="togglePanel('panel1')">
-                <i class="fa-solid fa-filter"></i> Attributes
-            </button>
-            <div id="panel1" class="panel"></div>
-            <button class="btn btn-lg btn-primary main-button" type="button" onclick="togglePanel('panel2')">
-                <i class="fa-solid fa-shapes"></i> Geometry
-            </button>
-            <div id="panel2" class="panel"></div>
-        </div>
-
-        <script>
-            let selectedType = "none";
-            let KontureType = "none";
-
-            function togglePanel(panelId) {
-                const panel = document.getElementById(panelId);
-
-                if (panel.style.display === 'none' || panel.style.display === '') {
-                    panel.style.display = 'block';
-
-                    if (panelId === 'panel1' && panel.childElementCount === 0) {
-                        initializePanel1();
-                    } else if (panelId === 'panel2' && panel.childElementCount === 0) {
-                        initializePanel2();
-                    }
-                } else {
-                    panel.style.display = 'none';
-                }
-            }
-
-            function initializePanel1() {
-                const panelButton1 = createPanelButton('Time', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton1', 'panelButton2', 'time', 'energy');
-                const panelButton2 = createPanelButton('Energy', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton2', 'panelButton1', 'energy', 'time');
-
-                document.getElementById('panel1').appendChild(panelButton1);
-                document.getElementById('panel1').appendChild(panelButton2);
-
-                // Restore selected state
-                restoreSelectedState(panelButton1);
-                restoreSelectedState(panelButton2);
-            }
-
-            function initializePanel2() {
-                const panelButton3 = createPanelButton('Concave', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton3', 'panelButton4', 'concave', 'convex');
-                const panelButton4 = createPanelButton('Convex', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton4', 'panelButton3', 'convex', 'concave');
-
-                document.getElementById('panel2').appendChild(panelButton3);
-                document.getElementById('panel2').appendChild(panelButton4);
-
-                // Restore selected state
-                restoreSelectedState(panelButton3);
-                restoreSelectedState(panelButton4);
-            }
-
-            function createPanelButton(text, className, defaultIconClass, toggleIconClass, buttonId, otherButtonId, type, otherType) {
-                const panelButton = document.createElement('button');
-                panelButton.className = `btn btn-lg btn-primary ${className}`;
-                panelButton.type = 'button';
-                panelButton.id = buttonId;
-
-                const defaultIconElement = document.createElement('i');
-                defaultIconElement.className = defaultIconClass;
-                defaultIconElement.style.fontSize = '15px';
-
-                panelButton.appendChild(defaultIconElement);
-
-                panelButton.innerHTML += ` ${text}`;
-
-                panelButton.addEventListener('click', function () {
-                    console.log(`${text} clicked`);
-
-                    const otherButton = document.getElementById(otherButtonId);
-
-                    panelButton.firstChild.className = toggleIconClass;
-                    otherButton.firstChild.className = defaultIconClass;
-
-                    if (type === 'concave' || type === 'convex') {
-                        KontureType = `${text} Hull`;
-                        console.log(`KontureType changed to: ${KontureType}`);
-                        console.log(`Selected Type: ${selectedType}`);
-                    }
-
-                    if (type === 'time' || type === 'energy') {
-                        selectedType = type;
-                        console.log(`KontureType changed to: ${KontureType}`);
-                        console.log(`Selected Type: ${selectedType}`);
-                    }
-
-                });
-
-                return panelButton;
-            }
-
-            function restoreSelectedState(button) {
-                const selectedType = button.firstChild.className === 'fa-regular fa-circle-xmark' ? button.id : null;
-                if (selectedType) {
-                    button.classList.add('selected');
-                    button.firstChild.className = 'fa-regular fa-circle-xmark';
-                }
-            }
-        </script>
-
-    </body>
-</html>
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3PBnv4efUshCtN+flQ02Orj8ajCfbqFu1A6LuhMabOfFQyMOh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
 
-        body {
-            font-family: 'Century Gothic', sans-serif;
+        .main-button, .side-button {
+            display: flex;
+            align-items: center;
+            background-color: #000000;
             color: white;
+            border-color: black;
+            width: 100%;
+            padding: 0px;
+            height: 75px;
+            font-family: 'Century Gothic', sans-serif; /* Set font-family to Century Gothic */
         }
 
+            .main-button i {
+                font-size: 20px;
+                margin-left: 10px;
+                margin-right: 15px;
+            }
 
+            .side-button i {
+                font-size: 8px;
+                margin-left: 25px;
+                margin-right: 10px;
+            }
+
+        .panel {
+            display: none;
+            margin-top: 0px;
+        }
+
+        .side-button {
+            display: block;
+            margin-top: 0;
+            text-align: left;
+        }
+
+        .selected {
+            background-color: #3b5998;
+        }
+
+            .selected i {
+                color: #ffffff;
+            }
 
         .slider-value {
             font-family: 'Century Gothic', sans-serif;
@@ -286,51 +143,185 @@
                 border-radius: 5px; /* Set border-radius for rounded edges */
                 background-color: white; /* Set the color of the slider track */
             }
+        label {
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 14px;
+            color: white;
+            margin-left: 10px;
+        }
+
+        input {
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 14px;
+            background-color: black; /* Set the background color to black */
+            border: none; /* Remove the border */
+            color: white; /* Set the text color to white */
+            padding: 5px; /* Add padding for better appearance */
+            max-width: 150px;
+        }
+        .badge:hover {
+            cursor: pointer;
+        }
     </style>
-    <title>Slider Example</title>
+
+
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <fieldset class="form-group">
-                    <legend class="mt-4 slider-label"><i class="fa-regular fa-clock"></i>&nbsp;&nbsp;Time</legend>
-                    <br />
-                    <br />
-                    <div class="slider-container">
-                        <div class="position-relative">
-                            <input type="range" class="form-range" min="0" max="20" step="1" id="customRange1" oninput="updateValue('value1', this.value, 'label1')">
-                            <div id="value1" class="slider-value"></div>
-                        </div>
-                        <span class="slider-text">in minutes</span>
-                    </div>
-                </fieldset>
-            </div>
+    <div class="sidebar">
+
+        
+
+        <div class="d-grid gap">
+            <button class="btn btn-lg btn-primary main-button" type="button" onclick="togglePanel('panel1')">
+                <i class="fa-solid fa-filter"></i> Attributes
+            </button>
+            <div id="panel1" class="panel"></div>
+            <button class="btn btn-lg btn-primary main-button" type="button" onclick="togglePanel('panel2')">
+                <i class="fa-solid fa-shapes"></i> Geometry
+            </button>
+            <div id="panel2" class="panel"></div>
         </div>
-        <div class="row">
-            <div class="col-md-6">
-                <fieldset class="form-group">
-                    <legend class="mt-4 slider-label"><i class="fa-solid fa-bolt"></i>&nbsp;&nbsp;Energy</legend>
-                    <br />
-                    <br />
-                    <div class="slider-container">
-                        <div class="position-relative">
-                            <input type="range" class="form-range" min="0" max="2" step="0.1" id="customRange2" oninput="updateValue('value2', this.value, 'label2')">
-                            <div id="value2" class="slider-value"></div>
-                            <div class="SelectBtn"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <fieldset class="form-group">
+                        <legend class="mt-4 slider-label"><i class="fa-regular fa-clock"></i>&nbsp;&nbsp;Time</legend>
+                        <br />
+                        <br />
+                        <div class="slider-container">
+                            <div class="position-relative">
+                                <input type="range" class="form-range" min="0" max="20" step="1" id="customRange1" oninput="updateValue('value1', this.value, 'label1')">
+                                <div id="value1" class="slider-value"></div>
+                            </div>
+                            <span class="slider-text">in minutes</span>
                         </div>
-                        <span class="slider-text">in kWh</span>
-                    </div>
-                </fieldset>
+                    </fieldset>
+                </div>
             </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <fieldset class="form-group">
+                        <legend class="mt-4 slider-label"><i class="fa-solid fa-bolt"></i>&nbsp;&nbsp;Energy</legend>
+                        <br />
+                        <br />
+                        <div class="slider-container">
+                            <div class="position-relative">
+                                <input type="range" class="form-range" min="0" max="2" step="0.1" id="customRange2" oninput="updateValue('value2', this.value, 'label2')">
+                                <div id="value2" class="slider-value"></div>
+                                <div class="SelectBtn"></div>
+                            </div>
+                            <span class="slider-text">in kWh</span>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            <input type="hidden" id="hidden1" name="customRange1">
+            <input type="hidden" id="hidden2" name="customRange2">
         </div>
-        <input type="hidden" id="hidden1" name="customRange1">
-        <input type="hidden" id="hidden2" name="customRange2">
+        <label><i class="fas fa-x"></i>&nbsp;&nbsp;Latitude:&nbsp;&nbsp;&nbsp;</label>
+        <input type="text" id="txtLatitude" readonly="true" disabled />
+        <br>
+        <label><i class="fas fa-y" style="margin: 1px; top: 0px"></i>&nbsp;&nbsp;Longitude:</label>
+        <input type="text" id="txtLongitude" readonly="true" disabled />
+
+        <br>
+        <button class="btn btn-lg btn-primary main-button" type="button" style="width: 100%; margin: 0px; padding: 10px" onclick="computeConture()">
+            <i class="fa-regular fa-circle-play" style="font-size: 20px; margin-left: 10px; margin-right: 15px;"></i>
+            Start
+        </button>
+
+
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"></script>
-
     <script>
+        let selectedType = "none";
+        let KontureType = "none";
+
+        function togglePanel(panelId) {
+            const panel = document.getElementById(panelId);
+
+            if (panel.style.display === 'none' || panel.style.display === '') {
+                panel.style.display = 'block';
+
+                if (panelId === 'panel1' && panel.childElementCount === 0) {
+                    initializePanel1();
+                } else if (panelId === 'panel2' && panel.childElementCount === 0) {
+                    initializePanel2();
+                }
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function initializePanel1() {
+            const panelButton1 = createPanelButton('Time', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton1', 'panelButton2', 'time', 'energy');
+            const panelButton2 = createPanelButton('Energy', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton2', 'panelButton1', 'energy', 'time');
+
+            document.getElementById('panel1').appendChild(panelButton1);
+            document.getElementById('panel1').appendChild(panelButton2);
+
+            // Restore selected state
+            restoreSelectedState(panelButton1);
+            restoreSelectedState(panelButton2);
+        }
+
+        function initializePanel2() {
+            const panelButton3 = createPanelButton('Concave', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton3', 'panelButton4', 'concave', 'convex');
+            const panelButton4 = createPanelButton('Convex', 'side-button', 'fa-regular fa-circle', 'fa-regular fa-circle-xmark', 'panelButton4', 'panelButton3', 'convex', 'concave');
+
+            document.getElementById('panel2').appendChild(panelButton3);
+            document.getElementById('panel2').appendChild(panelButton4);
+
+            // Restore selected state
+            restoreSelectedState(panelButton3);
+            restoreSelectedState(panelButton4);
+        }
+
+        function createPanelButton(text, className, defaultIconClass, toggleIconClass, buttonId, otherButtonId, type, otherType) {
+            const panelButton = document.createElement('button');
+            panelButton.className = `btn btn-lg btn-primary ${className}`;
+            panelButton.type = 'button';
+            panelButton.id = buttonId;
+
+            const defaultIconElement = document.createElement('i');
+            defaultIconElement.className = defaultIconClass;
+            defaultIconElement.style.fontSize = '15px';
+
+            panelButton.appendChild(defaultIconElement);
+
+            panelButton.innerHTML += ` ${text}`;
+
+            panelButton.addEventListener('click', function () {
+                console.log(`${text} clicked`);
+
+                const otherButton = document.getElementById(otherButtonId);
+
+                panelButton.firstChild.className = toggleIconClass;
+                otherButton.firstChild.className = defaultIconClass;
+
+                if (type === 'concave' || type === 'convex') {
+                    KontureType = `${text} Hull`;
+                    console.log(`KontureType changed to: ${KontureType}`);
+                    console.log(`Selected Type: ${selectedType}`);
+                }
+
+                if (type === 'time' || type === 'energy') {
+                    selectedType = type;
+                    console.log(`KontureType changed to: ${KontureType}`);
+                    console.log(`Selected Type: ${selectedType}`);
+                }
+
+            });
+
+            return panelButton;
+        }
+
+        function restoreSelectedState(button) {
+            const selectedType = button.firstChild.className === 'fa-regular fa-circle-xmark' ? button.id : null;
+            if (selectedType) {
+                button.classList.add('selected');
+                button.firstChild.className = 'fa-regular fa-circle-xmark';
+            }
+        }
         function updateValue(elementId, value, labelId) {
             const slider = document.getElementById(elementId.replace('value', 'customRange'));
             const sliderValueElement = document.getElementById(elementId);
@@ -354,79 +345,20 @@
             submitForm();
         }
     </script>
-</body>
-</html>
-
-<br />
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Add the Font Awesome library link here if not included -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-cJXfV5A5q3GxdxMXQ/Rqe5ePdiZ/S3U6f5nI+YXg6lN7L2SRfi4a/7FmC5P9Yfo4" crossorigin="anonymous">
-    <style>
-        /* Add this style to change cursor on hover */
-
-        .badge:hover {
-            cursor: pointer;                 
-        }
 
 
-        body {
-            font-family: 'Century Gothic', sans-serif;
-        }
-
-        label {
-            font-family: 'Century Gothic', sans-serif;
-            font-size: 14px;
-            color: white;
-            margin-left: 10px;
-        }
-
-        input {
-            font-family: 'Century Gothic', sans-serif;
-            font-size: 14px;
-            background-color: black; /* Set the background color to black */
-            border: none; /* Remove the border */
-            color: white; /* Set the text color to white */
-            padding: 5px; /* Add padding for better appearance */
-            max-width: 150px;
-        }
-    </style>
-    <title>Location Example</title>
-</head>
-<body>
-    <label><i class="fas fa-x" ></i>&nbsp;&nbsp;Latitude:&nbsp;&nbsp;&nbsp;</label>
-    <input type="text" id="txtLatitude" readonly="true" disabled />
-    <br>
-    <label><i class="fas fa-y"style="margin: 1px; top: 0px"></i>&nbsp;&nbsp;Longitude:</label>
-    <input type="text" id="txtLongitude" readonly="true" disabled />
 </body>
 </html>
 
 
+<div id="divMap"></div>
 
 
 
 
-<br>
-<button class="btn btn-lg btn-primary main-button" type="button" style="width: 100%; margin: 0px; padding: 10px" onclick="computeConture()">
-    <i class="fa-regular fa-circle-play" style="font-size: 20px; margin-left: 10px; margin-right: 15px;"></i>
-    Start
-</button>
 
 
 
-
-<div id="sidePanel">
-    <!-- Content for the side panel goes here -->
-</div>
-
-
-
-</div>
 
 
 
@@ -473,7 +405,7 @@
 
     function computeConture() {
 
-        
+
         // Event listeners for radio buttons
         $(document).ready(function () {
             $('input[name="optionsRadios"]').on('change', function () {
@@ -552,31 +484,60 @@
             style: vectorStyle
         });
 
-        
+
 
         map.addLayer(vectorLayer);
 
-        // Create a badge element
-        var badge = document.createElement('span');
-        badge.className = 'badge rounded-pill';
-        badge.style.backgroundColor = color;  // Set the background color of the badge
-        badge.textContent = 'Layer Created';
 
-        badge.style.fontFamily = 'Century Gothic';
+        // Create a pill button element
+        var pillButton = document.createElement('span');
+        pillButton.className = 'badge rounded-pill d-flex justify-content-between align-items-center';
+        pillButton.style.backgroundColor = color;
+        pillButton.style.width = '50px'
 
-        var divOptions = document.getElementById('divOptions');
-        if (divOptions) {
-            divOptions.appendChild(document.createElement('br'));
-            divOptions.appendChild(badge);
-        }
+        // Create a span for the layer created text
+        var layerText = document.createElement('span');
+        layerText.textContent = 'Layer';
 
-        // Add event listener for double-click on the badge
-        badge.addEventListener('dblclick', function () {
+        // Create a span for the 'x' close button
+        var closeButton = document.createElement('span');
+        closeButton.textContent = 'x';
+        closeButton.style.cursor = 'pointer';
+        closeButton.style.marginLeft = '5px';
+
+        // Append layerText and closeButton to the pillButton
+        pillButton.appendChild(layerText);
+        pillButton.appendChild(closeButton);
+
+        // ...
+
+        // Add event listener for click on the close button
+        closeButton.addEventListener('click', function () {
             // Your code to remove the layer from the map
             map.removeLayer(vectorLayer); // assuming vectorLayer is the layer you want to remove
             console.log('Layer deleted!');
-            // Remove the badge from the divOptions
-            divOptions.removeChild(badge);
+            // Remove the pillButton from the sidebar
+            sidebar.removeChild(pillButton);
+        });
+
+        // ...
+
+        // Append the pillButton to the sidebar
+        var sidebar = document.getElementsByClassName('sidebar');
+        if (sidebar && sidebar.length > 0) {
+            sidebar[0].appendChild(document.createElement('br'));
+            sidebar[0].appendChild(pillButton);
+        }
+
+        
+
+        // Add event listener for double-click on the badge
+        closeButton.addEventListener('click', function () {
+            // Your code to remove the layer from the map
+            map.removeLayer(vectorLayer); // assuming vectorLayer is the layer you want to remove
+            console.log('Layer deleted!');
+            // Remove the pillButton from the sidebar
+            sidebar[0].removeChild(pillButton);
         });
 
     }
