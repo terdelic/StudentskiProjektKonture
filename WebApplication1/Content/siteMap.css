@@ -1,5 +1,7 @@
 ﻿
-
+* {
+    font-family: 'Century Gothic', sans-serif;
+}
 /*Div container za kartu*/
 #divMap {
     border: 2px solid #cccccc;

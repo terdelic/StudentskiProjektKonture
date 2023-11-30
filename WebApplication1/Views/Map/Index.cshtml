@@ -29,7 +29,7 @@
             padding: 0px;
             height: 75px;
             font-family: 'Century Gothic', sans-serif; /* Set font-family to Century Gothic */
-        }
+        }        
 
             .main-button i {
                 font-size: 20px;
@@ -80,6 +80,7 @@
             font-family: 'Century Gothic', sans-serif;
             color: white;
         }
+        
 
         .slider-value {
             font-family: 'Century Gothic', sans-serif;
@@ -165,7 +166,7 @@
 
         label {
             font-family: 'Century Gothic', sans-serif;
-            font-size: 14px;
+            font-size: 16px;
             color: white;
             margin-left: 10px;
         }
@@ -179,10 +180,42 @@
             padding: 5px; /* Add padding for better appearance */
             max-width: 150px;
         }
-
-        .badge:hover {
-            cursor: pointer;
+        #timeInput {
+            font-family: 'Century Gothic', sans-serif;
+            font-weight: bold;
+            font-size: 15px;
+            padding: 5px;
+            width: 150px; /* Set the width to your preference */
+            text-align: left;
+            outline: none;
+            margin-left: 30px; /* Adjust the margin to move the text input to the right */
+            width:80px;
         }
+
+        .icon-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+        .label-icon i.fa-clock {
+            margin-right: 0px; /* Adjust spacing between icon and label text */
+        }
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        .icon-button i.fa-rotate-right {
+            color: gray; /* Set the default color to gray */
+        }
+
+        .icon-button:hover i.fa-rotate-right {
+            color: white; /* Change the icon color to white on hover */
+        }
+        
+               
+
+        
     </style>
 
 
@@ -212,7 +245,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <fieldset class="form-group">
-                        <legend class="mt-4 slider-label"><i class="fa-regular fa-clock"></i>&nbsp;&nbsp;Time</legend>
+                        <legend class="mt-4 slider-label"><i class="fa-solid fa-hourglass-start"></i>&nbsp;&nbsp;Time</legend>
                         <br />
                         <br />
                         <div class="slider-container">
@@ -245,19 +278,50 @@
             <input type="hidden" id="hidden1" name="customRange1">
             <input type="hidden" id="hidden2" name="customRange2">
         </div>
+        <br />        
+            <label for="timeInput"><i class="fa-regular fa-clock"></i>&nbsp;&nbsp;Start time </label>
+            <br />
+            <div class="input-wrapper">
+                <input type="text" name="timeInput" id="timeInput" maxlength="8" placeholder="00:00:00" required />
+                <button class="icon-button" onclick="rotateTimeInput()">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+            <br>
 
-
-        <br>
-        <button class="btn btn-lg btn-primary main-button" type="button" style="width: 100%; margin: 0px; padding: 10px" onclick="computeConture()">
-            <i class="fa-regular fa-circle-play" style="font-size: 20px; margin-left: 10px; margin-right: 15px;"></i>
-            Start
-        </button>
+            <button class="btn btn-lg btn-primary main-button" type="button" onclick="computeConture()">
+                <i class="fa-regular fa-circle-play"></i> Start
+            </button>
 
 
     </div>
     <script>
         let selectedType = "none";
         let KontureType = "none";
+
+
+
+
+
+        const timeInput = document.getElementById("timeInput");
+
+        timeInput.addEventListener("input", (e) => {
+            const valuesOfInput = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
+
+            const formattedTime = valuesOfInput.replace(/(\d{2})(\d{0,2})(\d{0,2})/, (_, p1, p2, p3) => {
+                let result = p1;
+                if (p2 || p3) result += `:${p2 || '00'}${p3 ? `:${p3}` : ''}`;
+                return result;
+            });
+
+            e.target.value = formattedTime;
+
+        });
+
+        function rotateTimeInput() {
+            const timeInput = document.getElementById("timeInput");
+            timeInput.value = ""; // Reset the value to an empty string
+        }
 
         function togglePanel(panelId) {
             const panel = document.getElementById(panelId);
@@ -381,6 +445,22 @@
                 sidebar.classList.add('open');
             }
         }
+
+        let strVrijemePocetka = '';
+
+        function updateStrVrijemePocetka() {
+            const timeInput = document.getElementById("timeInput");
+            strVrijemePocetka = timeInput.value;
+
+            // Now you can use strVrijemePocetka for your further processing or updating
+            console.log("Updated strVrijemePocetka:", strVrijemePocetka);
+
+            // If you need to use this value in an AJAX call or any other logic, you can pass it accordingly.
+            // For example, update the computeConture function:
+            // computeConture(strVrijemePocetka);
+        }
+
+
     </script>
 
 
@@ -541,6 +621,8 @@
         console.log('Selected Var Time:', $('#hidden1').val());
         console.log('Selected Var Energy:', $('#hidden2').val());
         console.log('Selected Konture Type:', KontureType);
+        console.log('Selected Vrijeme Pocetka:', strVrijemePocetka);
+
 
         $.ajax({
              type: "POST",
@@ -612,23 +694,40 @@
         // Create a pill button element
         var pillButton = document.createElement('span');
         pillButton.className = 'badge rounded-pill d-flex justify-content-between align-items-center';
-        pillButton.style.backgroundColor = color;
+        pillButton.style.backgroundColor = 'black'; // Set the background color to black
+        pillButton.style.border = '2px solid ' + color; // Set a border with color
         pillButton.style.width = '85px'; // Increased width to accommodate the checkmark
+
 
         // Create a span for the checkmark icon
         var checkmarkIcon = document.createElement('i');
         checkmarkIcon.className = 'fas fa-check'; // You may need to adjust the class based on your FontAwesome setup
+        checkmarkIcon.style.color = 'white'; // Set the checkmark color to gray
         checkmarkIcon.style.marginRight = '5px'; // Add some margin to the right of the icon
 
         // Create a span for the layer created text
         var layerText = document.createElement('span');
         layerText.textContent = 'Layer';
+        layerText.style.color = 'white'; // Set the text color to white
 
         // Create a span for the 'x' close button
         var closeButton = document.createElement('span');
         closeButton.textContent = 'x';
         closeButton.style.cursor = 'pointer';
         closeButton.style.marginLeft = '5px';
+        closeButton.style.color = 'gray'; // Set initial color to gray
+
+
+       
+
+        // Add event listeners for hover effect
+        closeButton.addEventListener('mouseenter', function () {
+            closeButton.style.color = 'white'; // Change color to white on hover
+        });
+
+        closeButton.addEventListener('mouseleave', function () {
+            closeButton.style.color = 'gray'; // Change color back to gray on mouse leave
+        });
 
         // Add event listener for click on the pill button
         pillButton.addEventListener('click', function () {
@@ -642,7 +741,7 @@
             layerText.textContent = vectorLayer.getVisible() ? 'Layer' : 'Layer';
 
             // Modify the width of the pillButton based on layer visibility
-            pillButton.style.width = vectorLayer.getVisible() ? '80px' : '65px';
+            pillButton.style.width = vectorLayer.getVisible() ? '85px' : '68px';
 
         });
 
@@ -660,7 +759,6 @@
         pillButton.appendChild(layerText);
         pillButton.appendChild(closeButton);
 
-        // ...
 
         // Append the pillButton to the sidebar
         var sidebar = document.getElementsByClassName('sidebar');
@@ -677,14 +775,9 @@
     var colorPresets = [
         'rgba(255, 0, 0, 0.5)',     // Red
         'rgba(0, 255, 0, 0.5)',     // Green
-        'rgba(0, 0, 255, 0.5)',     // Blue
-        'rgba(255, 255, 0, 0.5)',   // Yellow
         'rgba(255, 0, 255, 0.5)',   // Magenta
         'rgba(0, 255, 255, 0.5)',   // Cyan
-        'rgba(128, 0, 0, 0.5)',     // Maroon
-        'rgba(0, 128, 0, 0.5)',     // Green (a bit darker)
-        'rgba(0, 0, 128, 0.5)',     // Navy
-        'rgba(128, 128, 0, 0.5)'    // Olive
+        'rgba(255, 255, 0, 0.5)',   // Cyan
     ];
 
 
