@@ -1,6 +1,9 @@
 ﻿
 * {
     font-family: 'Century Gothic', sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 /*Div container za kartu*/
 #divMap {
