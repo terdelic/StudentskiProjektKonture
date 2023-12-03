@@ -553,6 +553,8 @@
     var latitude =0
     var plotedObjects = [];
     var plotedVectorSources = [];
+    var markerFeature; // Declare a global variable to store the marker feature
+    var layerCreated = false;
     
 
     var map = new ol.Map({
@@ -603,8 +605,15 @@
 
     // Function to add a marker to the map
     function addMarker(coordinates) {
+        var startButtonClicked = layerCreated;
+
+        if (!startButtonClicked && markerFeature) {
+            vectorSource.removeFeature(markerFeature);
+            markerFeature = null; // Reset the markerFeature variable
+        }
+
         // Create a feature with a Point geometry
-        var markerFeature = new ol.Feature({
+        markerFeature = new ol.Feature({
             geometry: new ol.geom.Point(ol.proj.fromLonLat(coordinates)),
         });
 
@@ -621,6 +630,8 @@
 
         // Add the feature to the vector source
         vectorSource.addFeature(markerFeature);
+
+        layerCreated = false;
     }
 
 
@@ -673,6 +684,7 @@
     function succesfullCall(response) {
         console.log(response);
 
+
         var wkt = response;
 
         // Parse the WKT to create a geometry
@@ -719,6 +731,9 @@
 
 
         map.addLayer(vectorLayer);
+        if (vectorLayer) {
+            layerCreated = true;
+        }
 
 
         // Create a pill button element
@@ -726,7 +741,6 @@
         pillButton.className = 'badge rounded-pill d-flex justify-content-between align-items-center';
         pillButton.style.backgroundColor = 'black'; // Set the background color to black
         pillButton.style.border = '2px solid ' + color; // Set a border with color
-        pillButton.style.width = '85px'; // Increased width to accommodate the checkmark
 
 
         // Create a span for the checkmark icon
@@ -735,10 +749,22 @@
         checkmarkIcon.style.color = 'white'; // Set the checkmark color to gray
         checkmarkIcon.style.marginRight = '5px'; // Add some margin to the right of the icon
 
+        
+
         // Create a span for the layer created text
         var layerText = document.createElement('span');
-        layerText.textContent = 'Layer';
+        if (selectedType == 'time') {
+            pillButton.style.width = '140px'; 
+            layerText.innerHTML = 'Time, ' + $('#hidden1').val() + ' min<br>' + KontureType;
+            layerText.style.textAlign = 'left';  // Add this line to set text alignment to left
+        }
+        else if (selectedType == 'energy') {
+            pillButton.style.width = '155px';
+            layerText.innerHTML = 'Energy, ' + $('#hidden2').val() + ' kWh<br>' + KontureType;
+            layerText.style.textAlign = 'left';  // Add this line to set text alignment to left
+        }
         layerText.style.color = 'white'; // Set the text color to white
+        layerText.style.marginLeft = '0px';
 
         // Create a span for the 'x' close button
         var closeButton = document.createElement('span');
@@ -771,13 +797,32 @@
             vectorLayer.setVisible(!vectorLayer.getVisible());
 
             // Toggle the visibility of the checkmark icon
-            checkmarkIcon.style.display = vectorLayer.getVisible() ? 'inline' : 'none';
+            checkmarkIcon.style.display = vectorLayer.getVisible() ? 'inline' : 'none';           
 
-            // Update the text content based on the layer's visibility
-            layerText.textContent = vectorLayer.getVisible() ? 'Layer' : 'Layer';
+            var text = layerText.textContent;
 
-            // Modify the width of the pillButton based on layer visibility
-            pillButton.style.width = vectorLayer.getVisible() ? '85px' : '68px';
+            if (text[0] == 'T') {
+                if (text[text.length-6]=='x') {
+                    pillButton.style.width = vectorLayer.getVisible() ? '140px' : '128px';
+                    layerText.style.marginLeft = vectorLayer.getVisible() ? '0px':'5px';
+                    
+                }
+                else if (text[text.length - 6] == 'e') {
+                    pillButton.style.width = vectorLayer.getVisible() ? '140px' : '128px';
+                    layerText.style.marginLeft = vectorLayer.getVisible() ? '0px' : '5px';
+                }
+            }
+            else if (text[0] == 'E') {
+                if(text[text.length - 6] == 'x') {
+                    pillButton.style.width = vectorLayer.getVisible() ? '155px' : '143px';
+                    layerText.style.marginLeft = vectorLayer.getVisible() ? '0px' : '5px';
+                }
+                else if (text[text.length - 6] == 'e') {
+                    pillButton.style.width = vectorLayer.getVisible() ? '155px' : '143px';
+                    layerText.style.marginLeft = vectorLayer.getVisible() ? '0px' : '5px';
+                }
+            }
+
 
         });
 
@@ -787,7 +832,7 @@
             map.removeLayer(vectorLayer); // assuming vectorLayer is the layer you want to remove
             console.log('Layer deleted!');
             // Remove the pillButton from the sidebar
-            sidebar[0].removeChild(pillButton);               
+            sidebar[0].removeChild(pillButton);                  
         });
 
        
