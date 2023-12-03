@@ -12,24 +12,27 @@ using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using NetTopologySuite.Operation.Overlay;
 using NetTopologySuite.Operation.Union;
+using static WebApplication1.Controllers.MapController;
 
 namespace WebApplication1.Controllers
 {
     public class MapController : Controller
-    {
-        //Ne znam jel ovo moze bit tu
+    {        
         static Dictionary<int, Vrh> listaVrhova;
         FibonacciHeap<Vrh, double> heap;
         // Get the physical path of the App_Data folder
         string appDataPath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data");
+        double vrijemePocetkaUSekundama=0;
+        Vrh vEnergija = new Vrh();
 
-          
+
+
+
         int zapamtiIDpocetka;
         double zapamtiVrijemePocetka;
         double n;
         Vrh pocetak, zavrsetak;        
         string izbor;        
-        Vrh vEnergija = new Vrh();
         bool podatciUcitani=false;
 
         StreamReader citanje;
@@ -84,24 +87,50 @@ namespace WebApplication1.Controllers
         public ActionResult ComputeConture(string longitude, string latitude, string selectedType, string selectedVarTime, string selectedVarEnergy, string KontureType, string strVrijemePocetka)
         {
             double dlongitude = Convert.ToDouble(longitude.Replace('.',','));
-            double dlatitude = Convert.ToDouble(latitude.Replace('.', ','));
-            double vrijemePocetkaUSekundama = Convert.ToDouble(strVrijemePocetka.Replace('.', ','));
+            double dlatitude = Convert.ToDouble(latitude.Replace('.', ','));                 
+
+            string[] d = strVrijemePocetka.Split(':');
+            int sati = Convert.ToInt32(d[0]);
+            int min = Convert.ToInt32(d[1]);
+            int sek = Convert.ToInt32(d[2]);
+            vrijemePocetkaUSekundama = ((sati * 60) + min + (sek / 60.0))*60;
             //Pronadi najblizi vrh
             pocetak = PronadiNajbliziLink(dlongitude, dlatitude);
 
-            //Pozovi dijkstru kroz FibonacciHeap metodu
-            if (selectedType == "energy")
+            if (vrijemePocetkaUSekundama == 0)
             {
-                string izbor = "energija prosjecna";
-                FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
-                n = Convert.ToDouble(selectedVarEnergy);
+                if (selectedType == "energy")
+                {
+                    //BellmanFord();
+                    izbor = "energija prosjecna";
+                    FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
+                    n = Convert.ToDouble(selectedVarEnergy);
+                }
+                else if (selectedType == "time")
+                {                    
+                    izbor = "vrijeme prosjecno";
+                    FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
+                    n = Convert.ToDouble(selectedVarTime) * 60;
+                }
             }
-            else if (selectedType == "time")
+            else
             {
-                string izbor = "vrijeme";
-                FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
-                n = Convert.ToDouble(selectedVarTime)*60;
+                if (selectedType == "energy")
+                {
+                    //BellmanFord();
+                    izbor = "energija profil";
+                    FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
+                    n = Convert.ToDouble(selectedVarEnergy);
+                }
+                else if (selectedType == "time")
+                {
+                    izbor = "vrijeme profil";
+                    FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
+                    n = Convert.ToDouble(selectedVarTime) * 60;
+                }
             }
+
+            
 
             //Filtiranje vrhova
             var listaVrhovaZaFilter = listaVrhova.ToList();
@@ -237,10 +266,11 @@ namespace WebApplication1.Controllers
 
                 //Bellman Ford
                 listaVrhova.Add(vEnergija.linkID, vEnergija);
-                pocetak = vEnergija;
+                pocetak= vEnergija;
                 izbor = "BellmanFord";
-                FibonacciHeapMetoda(izbor,0);
+                FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
                 listaVrhova.Remove(vEnergija.linkID);
+
 
                 citanje.Close();                
                 podatciUcitani = true;
@@ -250,6 +280,15 @@ namespace WebApplication1.Controllers
                 Console.WriteLine("Greska "+ ex.Message);
             }
         }
+        public void BellmanFord()
+        {
+            listaVrhova.Add(vEnergija.linkID, vEnergija);
+            //pocetakEnergija = vEnergija;
+            izbor = "BellmanFord";
+            FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
+            listaVrhova.Remove(vEnergija.linkID);
+        }
+
         public void FibonacciHeapMetoda(string izbor, double vrijemePocetkaUSekundama)
         {
             if (izbor != "BellmanFord")
@@ -303,7 +342,7 @@ namespace WebApplication1.Controllers
                                 if (listaVrhova.ContainsKey(linkID))
                                 {
                                     Vrh v2 = listaVrhova[linkID];
-                                    double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.prosjecnaBrzina * (1000.0 / 60.0));
+                                    double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.prosjecnaBrzina) * 3.6;
                                     //double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.prosjecnaBrzina * (1000 / 60));
                                     double vrijemeDolaskaDoV2 = v1.vrijemePolaska + vrijemePutovanjaIzmeduV1iV2;
                                     if (v2.obraden)
@@ -325,7 +364,7 @@ namespace WebApplication1.Controllers
                         }
                     }
                 }
-                else if (izbor == "vrijeme")
+                else if (izbor == "vrijeme prosjecno")
                 {
                     while (!heap.IsEmpty())
                     {
@@ -377,6 +416,105 @@ namespace WebApplication1.Controllers
                         }
                     }
                 }
+                else if (izbor == "energija profil")
+                {
+                    while (!heap.IsEmpty())
+                    {
+                        FibonacciHeapNode<Vrh, double> najbolji = null;
+                        if (i == 0)
+                        {
+                            najbolji = pocetakHeapNode;
+                            i++;
+                        }
+                        else
+                        {
+                            najbolji = heap.RemoveMin();
+                        }
+                        najbolji.Data.obraden = true;
+                        if (!heap.IsEmpty())
+                        {
+                            v1 = najbolji.Data;
+                            foreach (int linkID in v1.listaSusjednihLinkova)
+                            {
+                                if (listaVrhova.ContainsKey(linkID))
+                                {
+                                    Vrh v2 = listaVrhova[linkID];
+                                    int indeksProfila = Convert.ToInt32(v1.vrijemePolaska / 5);
+                                    double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.profilBrzine[indeksProfila])*3.6;
+                                    //double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.prosjecnaBrzina * (1000 / 60));
+                                    double vrijemeDolaskaDoV2 = v1.vrijemePolaska + vrijemePutovanjaIzmeduV1iV2;
+                                    if (v2.obraden)
+                                    {
+                                        continue;
+                                    }
+                                    if (v2.tezina > v1.tezina + v2.profilEnergije[indeksProfila] + v1.tezinaEnergija - v2.tezinaEnergija)
+                                    {
+                                        FibonacciHeapNode<Vrh, double> nodeToUpdate = sviUHeapu[v2.linkID];
+                                        v2.tezina = v1.tezina + v2.profilEnergije[indeksProfila] + v1.tezinaEnergija - v2.tezinaEnergija;
+                                        v2.prethodni = v1;
+                                        v2.vrijemePolaska = vrijemeDolaskaDoV2;
+                                        heap.DecreaseKey(nodeToUpdate, v2.tezina);
+                                        //za ispis
+                                        v2.ukupnaDuljina = v1.ukupnaDuljina + v1.duljinaLinka;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (izbor == "vrijeme profil")
+                {
+                    while (!heap.IsEmpty())
+                    {
+                        FibonacciHeapNode<Vrh, double> najbolji = null;
+                        if (i == 0)
+                        {
+                            najbolji = pocetakHeapNode;
+                            i++;
+                        }
+                        else
+                        {
+                            najbolji = heap.RemoveMin();
+                        }
+                        najbolji.Data.obraden = true;
+                        if (!heap.IsEmpty())
+                        {
+                            v1 = najbolji.Data;
+                            foreach (int linkID in v1.listaSusjednihLinkova)
+                            {
+                                if (listaVrhova.ContainsKey(linkID))
+                                {
+                                    Vrh v2 = listaVrhova[linkID];
+                                    int indeksProfila = Convert.ToInt32(v1.vrijemePolaska / 5);
+                                    double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.profilBrzine[indeksProfila]) * 3.6;
+                                    //double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka /v1.prosjecnaBrzina)*60/1000;
+                                    double vrijemeDolaskaDoV2 = v1.vrijemePolaska + vrijemePutovanjaIzmeduV1iV2;
+                                    if (v2.obraden)
+                                    {
+                                        continue;
+                                    }
+                                    //I ovo mi se čini da je bilo krivo
+                                    //if (v2.tezina > v1.tezina + vrijemeDolaskaDoV2)
+                                    if (v2.tezina > vrijemeDolaskaDoV2)
+                                    {
+                                        if (Math.Abs(v2.linkID) == 234015)
+                                        {
+                                            Console.WriteLine();
+                                        }
+                                        FibonacciHeapNode<Vrh, double> nodeToUpdate = sviUHeapu[v2.linkID];
+                                        v2.tezina = vrijemeDolaskaDoV2;
+                                        v2.prethodni = v1;
+                                        v2.vrijemePolaska = vrijemeDolaskaDoV2;
+                                        heap.DecreaseKey(nodeToUpdate, v2.tezina);
+                                        //za ispis
+                                        v2.ukupnaEnergija = v1.ukupnaEnergija + v1.prosjecnaEnergija;
+                                        v2.ukupnaDuljina = v1.ukupnaDuljina + v1.duljinaLinka;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
             else
             {
@@ -404,32 +542,73 @@ namespace WebApplication1.Controllers
                 }
                 int i = 0;
                 Vrh v1;
-                while (!heap.IsEmpty())
+                if (vrijemePocetkaUSekundama == 0)
                 {
-                    FibonacciHeapNode<Vrh, double> najbolji = null;
-                    if (i == 0)
+                    while (!heap.IsEmpty())
                     {
-                        najbolji = pocetakHeapNode;
-                        i++;
-                    }
-                    else
-                    {
-                        najbolji = heap.RemoveMin();
-                    }
-                    najbolji.Data.obraden = true;
-                    if (!heap.IsEmpty())
-                    {
-                        v1 = najbolji.Data;
-                        foreach (int linkID in v1.listaSusjednihLinkova)
+                        FibonacciHeapNode<Vrh, double> najbolji = null;
+                        if (i == 0)
                         {
-                            if (listaVrhova.ContainsKey(linkID))
+                            najbolji = pocetakHeapNode;
+                            i++;
+                        }
+                        else
+                        {
+                            najbolji = heap.RemoveMin();
+                        }
+                        najbolji.Data.obraden = true;
+                        if (!heap.IsEmpty())
+                        {
+                            v1 = najbolji.Data;
+                            foreach (int linkID in v1.listaSusjednihLinkova)
                             {
-                                Vrh v2 = listaVrhova[linkID];
-                                if (v2.tezinaEnergija > v1.tezinaEnergija + v2.prosjecnaEnergija)
+                                if (listaVrhova.ContainsKey(linkID))
                                 {
-                                    FibonacciHeapNode<Vrh, double> nodeToUpdate = sviUHeapu[v2.linkID];
-                                    v2.tezinaEnergija = v1.tezinaEnergija + v2.prosjecnaEnergija;
-                                    heap.DecreaseKey(nodeToUpdate, v2.tezina);
+                                    Vrh v2 = listaVrhova[linkID];
+                                    if (v2.tezinaEnergija > v1.tezinaEnergija + v2.prosjecnaEnergija)
+                                    {
+                                        FibonacciHeapNode<Vrh, double> nodeToUpdate = sviUHeapu[v2.linkID];
+                                        v2.tezinaEnergija = v1.tezinaEnergija + v2.prosjecnaEnergija;
+                                        heap.DecreaseKey(nodeToUpdate, v2.tezina);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    while (!heap.IsEmpty())
+                    {
+                        FibonacciHeapNode<Vrh, double> najbolji = null;
+                        if (i == 0)
+                        {
+                            najbolji = pocetakHeapNode;
+                            i++;
+                        }
+                        else
+                        {
+                            najbolji = heap.RemoveMin();
+                        }
+                        najbolji.Data.obraden = true;
+                        if (!heap.IsEmpty())
+                        {
+                            v1 = najbolji.Data;
+                            foreach (int linkID in v1.listaSusjednihLinkova)
+                            {
+                                if (listaVrhova.ContainsKey(linkID))
+                                {
+                                    Vrh v2 = listaVrhova[linkID];
+                                    int indeksProfila = Convert.ToInt32(v1.vrijemePolaska / 5);
+                                    double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.profilBrzine[indeksProfila]) * 3.6;
+                                    double vrijemeDolaskaDoV2 = v1.vrijemePolaska + vrijemePutovanjaIzmeduV1iV2;
+                                    if (v2.tezinaEnergija > v1.tezinaEnergija + v2.profilEnergije[indeksProfila])
+                                    {
+                                        FibonacciHeapNode<Vrh, double> nodeToUpdate = sviUHeapu[v2.linkID];
+                                        v2.tezinaEnergija = v1.tezinaEnergija + v2.profilEnergije[indeksProfila];
+                                        v2.vrijemePolaska = vrijemeDolaskaDoV2;
+                                        heap.DecreaseKey(nodeToUpdate, v2.tezina);
+                                    }
                                 }
                             }
                         }

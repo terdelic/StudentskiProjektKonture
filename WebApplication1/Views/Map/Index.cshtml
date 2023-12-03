@@ -230,9 +230,6 @@
                 <i class="fa-solid fa-bars"></i> Menu
             </button>
         </div>
-
-
-
         <div class="d-grid gap">
             <button class="btn btn-lg btn-primary main-button" type="button" onclick="togglePanel('panel1')">
                 <i class="fa-solid fa-filter"></i> Attributes
@@ -542,6 +539,7 @@
     var latitude =0
     var plotedObjects = [];
     var plotedVectorSources = [];
+    
 
     var map = new ol.Map({
         interactions: ol.interaction.defaults({ doubleClickZoom: false }),
@@ -558,19 +556,11 @@
     });
 
     var vectorSource = new ol.source.Vector({});
-
-    map.on('dblclick', function (event) {
-        var koordinate = ol.proj.toLonLat(event.coordinate);
-
-        longitude = koordinate[0];
-        latitude = koordinate[1];
-
-        document.getElementById('txtLatitude').value = latitude;
-        document.getElementById('txtLongitude').value = longitude;
-
-
-
+    var vectorLayer = new ol.layer.Vector({
+        source: vectorSource
     });
+
+    map.addLayer(vectorLayer);
 
     map.on('dblclick', function (event) {
         var koordinate = ol.proj.toLonLat(event.coordinate);
@@ -592,21 +582,45 @@
         setTimeout(function () {
             customAlert.style.display = 'none';
         }, 10000);
+
+        // Add a marker to the clicked location
+        addMarker([longitude, latitude]);
     });
 
-    // Function to close the custom alert
-    function closeCustomAlert() {
-        var customAlert = document.getElementById('customAlert');
-        customAlert.style.display = 'none';
+    // Function to add a marker to the map
+    function addMarker(coordinates) {
+        // Create a feature with a Point geometry
+        var markerFeature = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.fromLonLat(coordinates)),
+        });
+
+        // Create a style for the marker
+        var markerStyle = new ol.style.Style({
+            image: new ol.style.Icon({
+                src: 'https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg', // Wikimedia Commons marker icon
+                scale: 0.7, // Adjust the scale as needed
+            }),
+        });
+
+        // Apply the style to the feature
+        markerFeature.setStyle(markerStyle);
+
+        // Add the feature to the vector source
+        vectorSource.addFeature(markerFeature);
     }
 
+
+
+
     //Varijable
-
-
-
-
     function computeConture() {
 
+        var strVrijemePocetka = document.getElementById('timeInput').value;
+
+        if (!strVrijemePocetka) {
+            // If empty, set a default value of "00:00:00"
+            strVrijemePocetka = "00:00:00";
+        }
 
         // Event listeners for radio buttons
         $(document).ready(function () {
@@ -629,7 +643,7 @@
         $.ajax({
              type: "POST",
             url: "@Url.Action("ComputeConture")",
-            data: { longitude: longitude, latitude: latitude, selectedType: selectedType, selectedVarTime: $('#hidden1').val(), selectedVarEnergy: $('#hidden2').val(), KontureType: KontureType, strVrijemePocetka: 0 },
+            data: { longitude: longitude, latitude: latitude, selectedType: selectedType, selectedVarTime: $('#hidden1').val(), selectedVarEnergy: $('#hidden2').val(), KontureType: KontureType, strVrijemePocetka: strVrijemePocetka},
             success: succesfullCall,//Funkcija koja se poziva ako je poziv bio uspješan
             failure: function (response) {
             //Ispiši grešku u malom prozorčiću
@@ -719,8 +733,14 @@
         closeButton.style.marginLeft = '5px';
         closeButton.style.color = 'gray'; // Set initial color to gray
 
+        // Add event listeners for hover effect to the pill button itself
+        pillButton.addEventListener('mouseenter', function () {            
+            pillButton.style.cursor = 'pointer'; // Change the cursor to a pointer
+        });
 
-       
+        pillButton.addEventListener('mouseleave', function () {           
+            pillButton.style.cursor = 'default'; // Change the cursor back to the default
+        });   
 
         // Add event listeners for hover effect
         closeButton.addEventListener('mouseenter', function () {
