@@ -566,7 +566,7 @@
         align-items: center;
         box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
         z-index: 100000 !important;
-        width: 270px;
+        width: 310px;
         font-size: 14px;
         border: 1px solid black;
     }
@@ -720,7 +720,7 @@
         }
         if (message != "Error!") {
             var alarmText = document.getElementById('alarmText');
-            alarmText.textContent = message;
+            alarmText.innerHTML = message;
             var customAlarm = document.getElementById('customAlarm');
             customAlarm.style.display = 'flex';
             setTimeout(function () {
