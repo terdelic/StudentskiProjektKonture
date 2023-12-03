@@ -473,6 +473,11 @@
             // computeConture(strVrijemePocetka);
         }
 
+        function closeCustomAlert() {
+            var customAlert = document.getElementById('customAlert');
+            customAlert.style.display = 'none';
+        }
+
 
     </script>
 
@@ -483,11 +488,19 @@
 
 <div id="divMap"></div>
 
-<<div id="customAlert" class="custom-alert" style="display: none;">
+<div id="customAlert" class="custom-alert" style="display: none;">
     <span id="alertIcon" class="alert-icon"></span>
     <span id="alertText">Longitude: 0 Latitude: 0</span>
     <span id="closeAlert" class="close-btn" onclick="closeCustomAlert()">×</span>
 </div>
+
+ <div id="customAlarm" class="custom-alarm" style="display: none;">
+     <span id="alertIcon" class="alarm-icon"></span>
+     <span id="alarmText">This is a custom alarm!</span>
+     <span id="closeAlarm" class="close-btn" onclick="closeCustomAlarm()">×</span>
+ </div>
+
+
 
 <label><i class="fas fa-x"></i>&nbsp;&nbsp;Latitude:&nbsp;&nbsp;&nbsp;</label>
 <input type="text" id="txtLatitude" readonly="true" disabled />
@@ -523,6 +536,40 @@
     }
 
     .alert-icon {
+        /* Add styles for the alert icon */
+        font-family: 'FontAwesome'; /* Assuming you're using FontAwesome for icons */
+        font-size: 16px;
+        margin-right: 10px;
+    }
+
+    .close-btn {
+        cursor: pointer;
+        font-size: 20px;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+    .custom-alarm {
+        position: fixed;
+        top: 120px;
+        right: 20px;
+        background-color: rgba(255, 0, 0, 0.65);
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+        z-index: 100000 !important;
+        width: 270px;
+        font-size: 14px;
+        border: 1px solid black;
+    }
+
+    #alarmText {
+        font-family: 'Century Gothic', sans-serif;
+    }
+    .alarm-icon {
         /* Add styles for the alert icon */
         font-family: 'FontAwesome'; /* Assuming you're using FontAwesome for icons */
         font-size: 16px;
@@ -634,11 +681,67 @@
         layerCreated = false;
     }
 
+    function showCustomAlarm(message) {
+        
+        var customAlarm = document.getElementById('customAlarm');
+        customAlarm.style.display = 'flex';
+        document.getElementById('alarmText').textContent = message;
+
+        // Position the custom alarm below the alert box or use default position
+        var alertBox = document.getElementById('customAlert');
+        if (alertBox) {
+            var alertBoxRect = alertBox.getBoundingClientRect();
+            customAlarm.style.top = alertBoxRect.bottom + 10 + 'px';
+        } else {
+            // Default position if alert box is not present
+            customAlarm.style.top = '120px';
+        }
+
+        // Hide the custom alarm after a certain duration (adjust as needed)
+        setTimeout(function () {
+            customAlarm.style.display = 'none';
+        }, 10000);
+
+    }
+
+    function closeCustomAlarm() {
+        var customAlarm = document.getElementById('customAlarm');
+        customAlarm.style.display = 'none';
+    }
+
 
 
 
     //Varijable
     function computeConture() {
+
+        console.log('Longitude:', longitude);
+        console.log('Latitude:', latitude);
+
+        var message = "Error!"
+
+        if (longitude==0 && latitude==0) {
+            message = message + "<br>Please choose coordinates!";        
+        }
+        if (selectedType=="none") {
+            message = message + "<br>Please choose attribute type!";            
+        }
+        if (KontureType == "none") {
+            message = message + "<br>Please choose geometry type!";
+        }
+        
+        if (selectedType == "time" && $('#hidden1').val()==0) {
+            message = message + "<br>Please choose time value!";
+        }
+        if (selectedType == "energy" && $('#hidden2').val() == 0) {
+            message = message + "<br>Please choose energy value!";
+        }
+        if (message != "Error!") {
+            document.getElementById("customAlarm").innerHTML = message;
+            showCustomAlarm(message);
+        }
+
+        //showCustomAlarm("Test message");
 
         var strVrijemePocetka = document.getElementById('timeInput').value;
 
