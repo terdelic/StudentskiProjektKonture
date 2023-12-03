@@ -24,14 +24,8 @@ namespace WebApplication1.Controllers
         string appDataPath = System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data");
         double vrijemePocetkaUSekundama=0;
         Vrh vEnergija = new Vrh();
-
-
-
-
-        int zapamtiIDpocetka;
-        double zapamtiVrijemePocetka;
         double n;
-        Vrh pocetak, zavrsetak;        
+        Vrh pocetak;        
         string izbor;        
         bool podatciUcitani=false;
 
@@ -158,7 +152,7 @@ namespace WebApplication1.Controllers
 
 
             // Calculate the alpha shape
-            var alphaBufferDisc = 0.0000001; // Adjust this value based on your data and desired shape
+            //var alphaBufferDisc = 0.0000001; // Adjust this value based on your data and desired shape
             //var result = BufferDisc(geometry, alphaBufferDisc, geomFactory);
 
 
