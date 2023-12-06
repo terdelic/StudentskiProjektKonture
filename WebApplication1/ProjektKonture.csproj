@@ -300,6 +300,8 @@
     <Content Include="Content\fontawesome.css" />
     <Content Include="Content\fontawesome.min.css" />
     <Content Include="Content\icons.js" />
+    <Content Include="Content\Images\SP_example.png" />
+    <Content Include="Content\Images\svg-edited.svg" />
     <Content Include="Content\ol.css" />
     <Content Include="Content\ol.js" />
     <Content Include="Content\regular.css" />
