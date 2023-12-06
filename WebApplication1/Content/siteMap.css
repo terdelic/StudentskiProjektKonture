@@ -1,5 +1,17 @@
 ﻿
 * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.custom-navbar-item {
+    margin: 0; /* Adjust as needed */
+    padding: 0; /* Adjust as needed */
+}
+
+
+* {
     font-family: 'Century Gothic', sans-serif;
     margin:0;
     padding:0;
@@ -15,12 +27,17 @@
     bottom: 0%;
     height: 100%;
     background: #cccccc;
-    z-index: 1;
+    z-index: 1
 }
+
+body {
+    overflow: hidden; /* Disable scrolling for the entire body */
+}
+
 /*Div container za opcije u sidebaru*/
-#divOptions {
+/*#divOptions {*/
     /*border: 2px solid #cccccc;*/
-    background-color: black;
+    /*background-color: black;
     position: absolute;
     left: 0px;
     right: 100% - 150px;
@@ -29,7 +46,7 @@
     background: black;
     z-index: 2;
     
-}
+}*/
 
 
 

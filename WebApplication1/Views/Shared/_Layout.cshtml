@@ -9,21 +9,24 @@
 
 </head>
 <body>
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-black">
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-black align-items-center">
         <div class="container">
-            @Html.ActionLink("Student project", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            @Html.ActionLink("Student project", "Index", "Home", new { area = "" }, new { @class = "navbar-brand custom-navbar-item" })
             <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Map", "Index", "Map", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link custom-navbar-item" })</li>
+                    <li>@Html.ActionLink("Map", "Index", "Map", new { area = "" }, new { @class = "nav-link custom-navbar-item" })</li>
                 </ul>
             </div>
         </div>
     </nav>
+
+
+
     <div class="container body-content">
         @RenderBody()
         <hr />
