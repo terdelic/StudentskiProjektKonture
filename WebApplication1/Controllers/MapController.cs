@@ -432,10 +432,16 @@ namespace WebApplication1.Controllers
                                 if (listaVrhova.ContainsKey(linkID))
                                 {
                                     Vrh v2 = listaVrhova[linkID];
-                                    int indeksProfila = Convert.ToInt32(v1.vrijemePolaskaUSekundama / 5);
-                                    double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.profilBrzine[indeksProfila])*3.6;
-                                    //double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.prosjecnaBrzina * (1000 / 60));
+                                    double vrijemePutovanjaIzmeduV1iV2 = double.MaxValue;
+                                    int indeksProfila=0;
+                                    if (v1.vrijemePolaskaUSekundama != double.MaxValue)
+                                    {
+                                        indeksProfila = Convert.ToInt32((v1.vrijemePolaskaUSekundama / 60.0) / 5.0);
+                                        vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.profilBrzine[indeksProfila]) * 3.6;
+                                    }
+
                                     double vrijemeDolaskaDoV2 = v1.vrijemePolaskaUSekundama + vrijemePutovanjaIzmeduV1iV2;
+
                                     if (v2.obraden)
                                     {
                                         continue;
@@ -595,11 +601,19 @@ namespace WebApplication1.Controllers
                             foreach (int linkID in v1.listaSusjednihLinkova)
                             {
                                 if (listaVrhova.ContainsKey(linkID))
-                                {
+                                {                                
                                     Vrh v2 = listaVrhova[linkID];
-                                    int indeksProfila = Convert.ToInt32(v1.vrijemePolaskaUSekundama / 5);
-                                    double vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.profilBrzine[indeksProfila]) * 3.6;
+                                    double vrijemePutovanjaIzmeduV1iV2 = double.MaxValue;
+                                    int indeksProfila = 0;
+                                    if (v1.vrijemePolaskaUSekundama != double.MaxValue)
+                                    {
+                                        indeksProfila = Convert.ToInt32((v1.vrijemePolaskaUSekundama / 60.0) / 5.0);
+                                        vrijemePutovanjaIzmeduV1iV2 = (v1.duljinaLinka) / (v1.profilBrzine[indeksProfila]) * 3.6;
+                                    }
+
                                     double vrijemeDolaskaDoV2 = v1.vrijemePolaskaUSekundama + vrijemePutovanjaIzmeduV1iV2;
+
+
                                     if (v2.tezinaEnergija > v1.tezinaEnergija + v2.profilEnergije[indeksProfila])
                                     {
                                         FibonacciHeapNode<Vrh, double> nodeToUpdate = sviUHeapu[v2.linkID];
@@ -607,6 +621,8 @@ namespace WebApplication1.Controllers
                                         v2.vrijemePolaskaUSekundama = vrijemeDolaskaDoV2;
                                         heap.DecreaseKey(nodeToUpdate, v2.tezina);
                                     }
+
+
                                 }
                             }
                         }
