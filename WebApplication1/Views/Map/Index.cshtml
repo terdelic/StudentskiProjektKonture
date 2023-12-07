@@ -235,9 +235,31 @@
 
         .sidebar {
             overflow-y: auto; /* Add this line to make the sidebar scrollable if needed */
-            max-height: 95vh; /* Set a maximum height if you want to limit the height */
+            max-height: 90vh; /* Set a maximum height if you want to limit the height */
+            top: 90px;
             /* Other styles for the sidebar */
         }
+
+
+        .main-button.icons-only i {
+            display: block;
+        }
+
+        .main-button.icons-only span {
+            display: none;
+        }
+
+        .time-slider.hidden {
+            display: none;
+        }
+
+        .hide-text {
+            font-size: 0; /* Hide the text by setting font size to 0 */
+        }
+
+            .hide-text i {
+                font-size: 16px; /* Set the font size for the icon */
+            }
     </style>
 
 
@@ -246,7 +268,7 @@
     <div class="sidebar">
 
         <div class="d-grid gap">
-            <button class="btn btn-lg btn-primary main-button" type="button">
+            <button class="btn btn-lg btn-primary main-button" type="button" id="menuButtonID">
                 <i class="fa-solid fa-bars"></i> Menu
             </button>
         </div>
@@ -264,10 +286,10 @@
             <div class="row">
                 <div class="col-md-6">
                     <fieldset class="form-group">
-                        <legend class="mt-4 slider-label"><i class="fa-solid fa-hourglass-start"></i>&nbsp;&nbsp;Time</legend>
+                        <legend class="mt-4 slider-label" id="TimeLegendID"><i class="fa-solid fa-hourglass-start"></i>&nbsp;&nbsp;Time</legend>
                         <br />
                         <br />
-                        <div class="slider-container">
+                        <div class="slider-container time-slider" id="timeSlider">
                             <div class="position-relative">
                                 <input type="range" class="form-range" min="1" max="20" step="1" id="customRange1" oninput="updateValue('value1', this.value, 'label1')">
                                 <div id="value1" class="slider-value"></div>
@@ -283,7 +305,7 @@
                         <legend class="mt-4 slider-label"><i class="fa-solid fa-bolt"></i>&nbsp;&nbsp;Energy</legend>
                         <br />
                         <br />
-                        <div class="slider-container">
+                        <div class="slider-container time-slider" id="energySlider">
                             <div class="position-relative">
                                 <input type="range" class="form-range" min="0.1" max="2" step="0.1" id="customRange2" oninput="updateValue('value2', this.value, 'label2')">
                                 <div id="value2" class="slider-value"></div>
@@ -298,9 +320,9 @@
             <input type="hidden" id="hidden2" name="customRange2">
         </div>
         <br />
-        <label for="timeInput"><i class="fa-regular fa-clock"></i>&nbsp;&nbsp;Start time </label>
+        <label for="timeInput" id="timeInputStartLabel"><i class="fa-regular fa-clock"></i>&nbsp;&nbsp;Start time </label>
         <br />
-        <div class="input-wrapper">
+        <div class="input-wrapper time-slider" id="startTimeInput">
             <input type="text" name="timeInput" id="timeInput" maxlength="8" placeholder="00:00:00" required />
             <button class="icon-button" onclick="rotateTimeInput()">
                 <i class="fa-solid fa-rotate-right"></i>
@@ -455,12 +477,48 @@
         });
 
         function toggleSidebar() {
+            //const sidebar = document.querySelector('.sidebar');
+
+            //if (sidebar.classList.contains('open')) {
+            //    sidebar.classList.remove('open');
+            //} else {
+            //    sidebar.classList.add('open');
+            //}
+
             const sidebar = document.querySelector('.sidebar');
+            const mainButton = document.querySelector('.main-button');
+            const timeSlider = document.getElementById('timeSlider');
+            const energySlider = document.getElementById('energySlider');
+            const startTimeInput = document.getElementById('startTimeInput');
+
+            const startTimeLabel = document.getElementById('timeInputStartLabel');
+            const TimeLegendID = document.getElementById('TimeLegendID');
+            const menuButtonID = document.getElementById('menuButtonID');
+            
 
             if (sidebar.classList.contains('open')) {
                 sidebar.classList.remove('open');
+                mainButton.classList.add('icons-only');
+
+                timeSlider.classList.add('hidden');
+                energySlider.classList.add('hidden');
+                startTimeInput.classList.add('hidden');
+
+                startTimeLabel.classList.add('hide-text');
+                TimeLegendID.classList.add('hide-text');
+                menuButtonID.classList.add('hide-text');
             } else {
                 sidebar.classList.add('open');
+                mainButton.classList.remove('icons-only');
+                timeSlider.classList.remove('hidden');
+                energySlider.classList.remove('hidden');
+                startTimeInput.classList.remove('hidden');
+
+
+                startTimeLabel.classList.remove('hide-text');
+
+                TimeLegendID.classList.remove('hide-text');
+                menuButtonID.classList.remove('hide-text');
             }
         }
 
@@ -503,6 +561,7 @@
     <span id="alertText">Longitude: 0 Latitude: 0</span>
     <span id="closeAlert" class="close-btn" onclick="closeCustomAlert()">×</span>
 </div>
+
 
 <div id="customAlarm" class="custom-alarm" style="display: none;">
     <span id="alertIcon" class="alarm-icon"></span>
@@ -693,7 +752,7 @@
         layerCreated = false;
     }
 
-    
+
 
 
 
@@ -703,7 +762,7 @@
     function computeConture() {
 
         console.log('Longitude:', longitude);
-        console.log('Latitude:', latitude);        
+        console.log('Latitude:', latitude);
 
         var strVrijemePocetka = document.getElementById('timeInput').value;
 
@@ -744,9 +803,10 @@
             setTimeout(function () {
                 customAlarm.style.display = 'none';
             }, 10000);
+            return;
         }
 
-        
+
 
 
         if (!strVrijemePocetka) {
@@ -976,5 +1036,7 @@
         'rgba(255, 255, 0, 0.5)',   // Cyan
     ];
 
+    toggleSidebar()
+    toggleSidebar()
 
 </script>
