@@ -81,9 +81,13 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public ActionResult ComputeConture(string longitude, string latitude, string selectedType, string selectedVarTime, string selectedVarEnergy, string KontureType, string strVrijemePocetka)
         {
-            double dlongitude = Convert.ToDouble(longitude.Replace('.',','));
-            double dlatitude = Convert.ToDouble(latitude.Replace('.', ','));                 
+            //double dlongitude = Convert.ToDouble(longitude.Replace('.', ','));
+            //double dlatitude = Convert.ToDouble(latitude.Replace('.', ','));
 
+            double dlongitude = Convert.ToDouble(longitude, CultureInfo.InvariantCulture);
+            double dlatitude = Convert.ToDouble(latitude, CultureInfo.InvariantCulture);
+            selectedVarEnergy = selectedVarEnergy.Replace(',', '.');
+            selectedVarTime= selectedVarTime.Replace(',', '.');
             string[] d = strVrijemePocetka.Split(':');
             int sati = Convert.ToInt32(d[0]);
             int min = Convert.ToInt32(d[1]);
@@ -99,13 +103,13 @@ namespace WebApplication1.Controllers
                     //BellmanFord();
                     izbor = "energija prosjecna";
                     FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
-                    n = Convert.ToDouble(selectedVarEnergy);
+                    n = Convert.ToDouble(selectedVarEnergy, CultureInfo.InvariantCulture);
                 }
                 else if (selectedType == "time")
                 {                    
                     izbor = "vrijeme prosjecno";
                     FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
-                    n = Convert.ToDouble(selectedVarTime) * 60;
+                    n = Convert.ToDouble(selectedVarTime, CultureInfo.InvariantCulture) * 60;
                 }
             }
             else
@@ -115,13 +119,13 @@ namespace WebApplication1.Controllers
                     //BellmanFord();
                     izbor = "energija profil";
                     FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
-                    n = Convert.ToDouble(selectedVarEnergy);
+                    n = Convert.ToDouble(selectedVarEnergy, CultureInfo.InvariantCulture);
                 }
                 else if (selectedType == "time")
                 {
                     izbor = "vrijeme profil";
                     FibonacciHeapMetoda(izbor, vrijemePocetkaUSekundama);
-                    n = vrijemePocetkaUSekundama+Convert.ToDouble(selectedVarTime) * 60;
+                    n = vrijemePocetkaUSekundama+Convert.ToDouble(selectedVarTime, CultureInfo.InvariantCulture) * 60;
                 }
             }
 
