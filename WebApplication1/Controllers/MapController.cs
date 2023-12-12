@@ -13,6 +13,7 @@ using NetTopologySuite.IO;
 using NetTopologySuite.Operation.Overlay;
 using NetTopologySuite.Operation.Union;
 using static WebApplication1.Controllers.MapController;
+using System.Globalization;
 
 namespace WebApplication1.Controllers
 {
@@ -134,14 +135,32 @@ namespace WebApplication1.Controllers
             
             // Create a list of coordinates from the filtered data
             var coordinates = new List<Coordinate>();
-            foreach (var vrh in listaVrhovaZaFilter)
+            foreach (KeyValuePair<int,Vrh> kvPair in listaVrhovaZaFilter)
             {
-                var coord = new Coordinate(vrh.Value.xZavrsetak, vrh.Value.yZavrsetak);
-                coordinates.Add(coord);
-                coord = new Coordinate(vrh.Value.xPocetak, vrh.Value.yPocetak);
-                coordinates.Add(coord);
-                coord = new Coordinate((vrh.Value.xPocetak + vrh.Value.xZavrsetak) / 2, (vrh.Value.yPocetak + vrh.Value.yZavrsetak) / 2);
-                coordinates.Add(coord);
+                Vrh tlink = kvPair.Value;
+                int duljinaL = tlink.duljinaLinka;
+                int numIntervals = (int)(duljinaL / 50);
+
+                if (duljinaL > 50)
+                {
+                    for (int i = 0; i <= numIntervals; i++)
+                    {
+                        double ratio = (double)i / numIntervals;
+                        double newLat = tlink.yPocetak + ratio * (tlink.yZavrsetak - tlink.yPocetak);
+                        double newLon = tlink.xPocetak + ratio * (tlink.xZavrsetak - tlink.xPocetak);
+                        var coord = new Coordinate(newLon, newLat);
+                        coordinates.Add(coord);
+                    }
+                }
+                else
+                {
+                    var coord = new Coordinate(kvPair.Value.xZavrsetak, kvPair.Value.yZavrsetak);
+                    coordinates.Add(coord);
+                    coord = new Coordinate(kvPair.Value.xPocetak, kvPair.Value.yPocetak);
+                    coordinates.Add(coord);
+                    coord = new Coordinate((kvPair.Value.xPocetak + kvPair.Value.xZavrsetak) / 2, (kvPair.Value.yPocetak + kvPair.Value.yZavrsetak) / 2);
+                    coordinates.Add(coord);
+                }
             }
 
             string contourWKT = null;
@@ -201,21 +220,22 @@ namespace WebApplication1.Controllers
 
                 while (!citanje.EndOfStream)
                 {
-                    string s = citanje.ReadLine().Replace('.', ',');
+                    //string s = citanje.ReadLine().Replace('.', ',');
+                    string s = citanje.ReadLine();
                     string[] d = s.Split(';');
                     int linkID = Convert.ToInt32(d[0]);
-                    double xPocetak = Convert.ToDouble(d[1]);
-                    double yPocetak = Convert.ToDouble(d[2]);
-                    double xZavrsetak = Convert.ToDouble(d[3]);
-                    double yZavrsetak = Convert.ToDouble(d[4]);
+                    double xPocetak = Convert.ToDouble(d[1], CultureInfo.InvariantCulture);
+                    double yPocetak = Convert.ToDouble(d[2], CultureInfo.InvariantCulture);
+                    double xZavrsetak = Convert.ToDouble(d[3], CultureInfo.InvariantCulture);
+                    double yZavrsetak = Convert.ToDouble(d[4], CultureInfo.InvariantCulture);
                     int duljinaLinka = Convert.ToInt32(d[5]);
                     int brzinaLinka = Convert.ToInt32(d[6]);
                     int ogranicenjeBrzine = Convert.ToInt32(d[7]);
                     int tipLinka = Convert.ToInt32(d[8]);
                     int zastavicaSmjera = Convert.ToInt32(d[9]);
-                    double brzinaSlobodnogToka = Convert.ToDouble(d[11]);
-                    double prosjecnaBrzina = Convert.ToDouble(d[12]);
-                    double prosjecnaEnergija = Convert.ToDouble(d[15]);
+                    double brzinaSlobodnogToka = Convert.ToDouble(d[11], CultureInfo.InvariantCulture);
+                    double prosjecnaBrzina = Convert.ToDouble(d[12], CultureInfo.InvariantCulture);
+                    double prosjecnaEnergija = Convert.ToDouble(d[15], CultureInfo.InvariantCulture);
                     Vrh vSvi = new Vrh
                     {
                         linkID = linkID,
@@ -243,13 +263,13 @@ namespace WebApplication1.Controllers
                     string[] brzina = d[13].Split('|');
                     for (int i = 0; i < brzina.Length; i++)
                     {
-                        vSvi.profilBrzine[i] = Convert.ToDouble(brzina[i]);
+                        vSvi.profilBrzine[i] = Convert.ToDouble(brzina[i], CultureInfo.InvariantCulture);
                     }
                     vSvi.profilEnergije = new double[288];
                     string[] energija = d[17].Split('|');
                     for (int i = 0; i < energija.Length; i++)
                     {
-                        vSvi.profilEnergije[i] = Convert.ToDouble(energija[i]);
+                        vSvi.profilEnergije[i] = Convert.ToDouble(energija[i], CultureInfo.InvariantCulture);
                     }
                     vEnergija.listaSusjednihLinkova.Add(vSvi.linkID);
                     vSvi.reset();

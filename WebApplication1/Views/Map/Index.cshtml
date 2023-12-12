@@ -418,7 +418,7 @@
             panelButton.innerHTML += ` ${text}`;
 
             panelButton.addEventListener('click', function () {
-                console.log(`${text} clicked`);
+                //console.log(`${text} clicked`);
 
                 const otherButton = document.getElementById(otherButtonId);
 
@@ -427,14 +427,14 @@
 
                 if (type === 'concave' || type === 'convex') {
                     KontureType = `${text} Hull`;
-                    console.log(`KontureType changed to: ${KontureType}`);
-                    console.log(`Selected Type: ${selectedType}`);
+                    //console.log(`KontureType changed to: ${KontureType}`);
+                    //console.log(`Selected Type: ${selectedType}`);
                 }
 
                 if (type === 'time' || type === 'energy') {
                     selectedType = type;
-                    console.log(`KontureType changed to: ${KontureType}`);
-                    console.log(`Selected Type: ${selectedType}`);
+                    //console.log(`KontureType changed to: ${KontureType}`);
+                    //console.log(`Selected Type: ${selectedType}`);
                 }
 
             });
@@ -469,7 +469,7 @@
             hiddenInput.value = formattedValue;
 
             // Automatically submit the form when slider values change
-            submitForm();
+            //submitForm();
         }
 
         document.querySelector('.main-button').addEventListener('click', function () {
@@ -529,11 +529,8 @@
             strVrijemePocetka = timeInput.value;
 
             // Now you can use strVrijemePocetka for your further processing or updating
-            console.log("Updated strVrijemePocetka:", strVrijemePocetka);
+            //console.log("Updated strVrijemePocetka:", strVrijemePocetka);
 
-            // If you need to use this value in an AJAX call or any other logic, you can pass it accordingly.
-            // For example, update the computeConture function:
-            // computeConture(strVrijemePocetka);
         }
 
         function closeCustomAlert() {
@@ -725,7 +722,7 @@
     function addMarker(coordinates) {
         var startButtonClicked = layerCreated;
 
-        if (!startButtonClicked && markerFeature) {
+        if (markerFeature) {
             vectorSource.removeFeature(markerFeature);
             markerFeature = null; // Reset the markerFeature variable
         }
@@ -761,8 +758,8 @@
     //Varijable
     function computeConture() {
 
-        console.log('Longitude:', longitude);
-        console.log('Latitude:', latitude);
+        //console.log('Longitude:', longitude);
+        //console.log('Latitude:', latitude);
 
         var strVrijemePocetka = document.getElementById('timeInput').value;
 
@@ -823,18 +820,18 @@
         $(document).ready(function () {
             $('input[name="optionsRadios"]').on('change', function () {
                 var selectedType = $(this).val();
-                console.log('Radio button changed:', selectedType);
+                //console.log('Radio button changed:', selectedType);
                 $('#selectedAttribute').val(selectedType);
             });
         });
 
-        console.log('Longitude:', longitude);
-        console.log('Latitude:', latitude);
-        console.log('Selected Type:', selectedType);
-        console.log('Selected Var Time:', $('#hidden1').val());
-        console.log('Selected Var Energy:', $('#hidden2').val());
-        console.log('Selected Konture Type:', KontureType);
-        console.log('Selected Vrijeme Pocetka:', strVrijemePocetka);
+        console.log('Longitude prije poziva:', longitude);
+        console.log('Latitude prije poziva:', latitude);
+        //console.log('Selected Type:', selectedType);
+        //console.log('Selected Var Time:', $('#hidden1').val());
+        //console.log('Selected Var Energy:', $('#hidden2').val());
+        //console.log('Selected Konture Type:', KontureType);
+        //console.log('Selected Vrijeme Pocetka:', strVrijemePocetka);
 
 
         $.ajax({
@@ -854,6 +851,7 @@
 
 
     function succesfullCall(response) {
+        console.log("Backend response:")
         console.log(response);
 
 
@@ -865,7 +863,7 @@
             featureProjection: 'EPSG:3857' // Spherical Mercator
         });
 
-        console.log(polygonGeometry);
+        //console.log(polygonGeometry);
 
         // Create a feature using the polygon geometry
         var polygonFeature = new ol.Feature(polygonGeometry);
@@ -1002,7 +1000,7 @@
         closeButton.addEventListener('click', function () {
             // Your code to remove the layer from the map
             map.removeLayer(vectorLayer); // assuming vectorLayer is the layer you want to remove
-            console.log('Layer deleted!');
+            //console.log('Layer deleted!');
             // Remove the pillButton from the sidebar
             sidebar[0].removeChild(pillButton);
         });
